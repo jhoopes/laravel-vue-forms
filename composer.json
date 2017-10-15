@@ -1,0 +1,24 @@
+{
+  "name": "jhoopes/laravel-vue-forms",
+  "description": "Laravel Vue Forms Package",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "John Hoopes"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "laravel/framework":  "5.4.* || 5.5.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "jhoopes\\LaravelVueForms\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "jhoopes\\LaravelVueForms\\Test\\" : "tests"
+    }
+  }
+}
