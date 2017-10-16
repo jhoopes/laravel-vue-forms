@@ -10,6 +10,7 @@ class LaravelVueFormsServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->defineResources();
+        $this->definePublishes();
 
         // Bind a custom Model Factory to the container so we can set our own Model Factory Class on it.
         $this->app->singleton('jhoopes\LaravelVueForms\ModelFactory', function() {
@@ -26,6 +27,13 @@ class LaravelVueFormsServiceProvider extends ServiceProvider
 
     }
 
+    protected function definePublishes()
+    {
+        $this->publishes([
+            LVFORMS_PATH . '/install-stubs/laravel-vue-forms.php' => config_path('laravel-vue-forms.php'),
+        ]);
+    }
+
 
     public function register()
     {
@@ -34,5 +42,8 @@ class LaravelVueFormsServiceProvider extends ServiceProvider
             define('LVFORMS_PATH', realpath(__DIR__.'/../../'));
         }
 
+        $this->mergeConfigFrom(
+            LVFORMS_PATH . '/install-stubs/laravel-vue-forms.php', 'laravel-vue-forms'
+        );
     }
 }

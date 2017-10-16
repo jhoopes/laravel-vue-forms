@@ -13,6 +13,7 @@ class CreateFormConfigurationsTable extends Migration
      */
     public function up()
     {
+
         Schema::create('form_configurations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique();

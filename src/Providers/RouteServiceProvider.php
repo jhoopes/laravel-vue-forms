@@ -50,7 +50,8 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapApiRoutes()
     {
         \Route::prefix('api/forms')
-            ->namespace($this->namespace)
+            ->namespace($this->namespace . '\Api')
+            ->middleware(config('laravel-vue-forms.api_middleware'))
             ->group(LVFORMS_PATH . '/routes/api.php');
     }
 }
