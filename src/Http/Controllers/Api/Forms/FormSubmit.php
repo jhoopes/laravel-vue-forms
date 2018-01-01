@@ -3,7 +3,7 @@
 namespace jhoopes\LaravelVueForms\Http\Controllers\Api\Forms;
 
 use jhoopes\LaravelVueForms\Form;
-use jhoopes\LaravelVueForms\Forms\Validation;
+use jhoopes\LaravelVueForms\Validation;
 use jhoopes\LaravelVueForms\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 

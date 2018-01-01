@@ -1,6 +1,6 @@
 <?php
 
-namespace jhoopes\LaravelVueForms\Forms;
+namespace jhoopes\LaravelVueForms;
 
 
 class Validation
