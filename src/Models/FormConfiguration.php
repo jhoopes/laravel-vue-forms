@@ -17,7 +17,9 @@ class FormConfiguration extends Model
 
     public function fields()
     {
-        return $this->belongsToMany(FormField::class)->orderBy('form_configuration_form_field.order');
+        return $this->belongsToMany(FormField::class)
+            ->orderBy('form_configuration_form_field.order')
+            ->withPivot('order');
     }
 
 }

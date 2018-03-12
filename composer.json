@@ -9,7 +9,7 @@
   ],
   "require": {
     "php": ">=7.0",
-    "laravel/framework":  "5.4.* || 5.5.*"
+    "laravel/framework": "5.4.* || 5.5.*"
   },
   "autoload": {
     "psr-4": {
@@ -18,7 +18,14 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "jhoopes\\LaravelVueForms\\Test\\" : "tests"
+      "jhoopes\\LaravelVueForms\\Test\\": "tests"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "jhoopes\\LaravelVueForms\\Providers\\LaravelVueFormsServiceProvider"
+      ]
     }
   }
 }

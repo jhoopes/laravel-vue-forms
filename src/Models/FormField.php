@@ -23,7 +23,8 @@ class FormField extends Model
 
     public function forms()
     {
-        return $this->belongsToMany(FormConfiguration::class);
+        return $this->belongsToMany(FormConfiguration::class)
+            ->withPivot(['order']);
     }
 
 }

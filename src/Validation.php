@@ -3,10 +3,12 @@
 namespace jhoopes\LaravelVueForms;
 
 
+use jhoopes\LaravelVueForms\Models\FormConfiguration;
+
 class Validation
 {
 
-    public function validate(\jhoopes\LaravelVueForms\Models\FormConfiguration $formConfig, $data, $defaultData = false)
+    public function validate(FormConfiguration $formConfig, $data, $defaultData = false)
     {
         $rules = $this->getValidationRules($formConfig);
 
@@ -17,7 +19,7 @@ class Validation
         return $this->getValidData($formConfig, $data, $defaultData);
     }
 
-    protected function getValidationRules(\jhoopes\LaravelVueForms\Models\FormConfiguration $formConfig)
+    protected function getValidationRules(FormConfiguration $formConfig)
     {
         $rules = [];
         $formConfig->fields->each(function ($field) use (&$rules) {
@@ -52,7 +54,8 @@ class Validation
     {
         $validData = [];
         $formConfig->fields->each(function ($field) use (&$validData, $data, $defaultData) {
-            if ($field->disabled === 0 && isset($data[$field->value_field])) {
+
+            if ($field->disabled === 0 && (isset($data[$field->value_field]) || array_key_exists($field->value_field, $data))) {
                 $validData[$field->value_field] = $data[$field->value_field];
             } else if ($defaultData) { // default field if available
                 if($field->disabled === 1 || !isset($data[$field->value_field])) {

@@ -21,7 +21,7 @@ class CreateFormFieldsTable extends Migration
             $table->string('widget');
             $table->boolean('visible')->default(1);
             $table->boolean('disabled')->default(0);
-            $table->text('field_extra')->nullable();
+            $table->json('field_extra')->nullable();
             $table->timestamps();
         });
     }

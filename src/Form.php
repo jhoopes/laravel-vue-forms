@@ -2,6 +2,7 @@
 
 namespace jhoopes\LaravelVueForms;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use jhoopes\LaravelVueForms\Models\FormConfiguration;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ class Form
 {
 
     protected $formConfig;
+    protected $action;
     protected $request;
 
     /**
@@ -28,13 +30,28 @@ class Form
         $this->validator = $validation;
 
         if($this->request->has('entityId')) {
+            $this->action = 'update';
             $this->entityModel = app($this->formConfig->entity_model)->findOrFail($this->request->get('entityId'));
         }else {
             $this->entityModel = app($this->formConfig->entity_model)->make([]);
+            $this->action = 'create';
         }
 
+        $this->hasPermission();
     }
 
+    /**
+     * @return $this
+     * @throws AuthorizationException
+     */
+    public function hasPermission() {
+
+        if(!\Gate::allows($this->action, $this->entityModel)) {
+            throw new AuthorizationException('This action (' . $this->action . ') is unauthorized');
+        }
+
+        return $this;
+    }
 
     public function validate()
     {
@@ -48,6 +65,11 @@ class Form
         return $this->validData;
     }
 
+    public function getFormConfiguration()
+    {
+        return $this->formConfig;
+    }
+
     public function save()
     {
         $this->entityModel
@@ -56,7 +78,6 @@ class Form
 
         return $this->entityModel->fresh();
     }
-
 
 
 }
