@@ -18,7 +18,6 @@ class FormSubmit extends Controller
             'data'                => 'required|array'
         ]);
 
-
         return (new Form($request->get('formConfigurationId'), $request, new Validation()))
             ->validate()
             ->save();

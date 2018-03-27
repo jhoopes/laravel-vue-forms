@@ -39,17 +39,20 @@ class Form
 
         $validation->init($this->action, $this->entityModel);
 
-        $this->hasPermission();
+        if(config('laravel-vue-forms.check_permissions')) {
+            $this->hasPermission();
+        }
     }
 
     /**
      * @return $this
      * @throws AuthorizationException
      */
-    public function hasPermission() {
-
-        if(!\Gate::allows($this->action, $this->entityModel)) {
-            throw new AuthorizationException('This action (' . $this->action . ') is unauthorized');
+    public function hasPermission()
+    {
+        if(\Gate::denies($this->action, $this->formConfig->entity_model)) {
+            throw new AuthorizationException('This action (' . $this->action . ', ' .
+                $this->formConfig->entity_model .') is unauthorized');
         }
 
         return $this;
