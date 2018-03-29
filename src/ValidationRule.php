@@ -10,14 +10,21 @@ abstract class ValidationRule
     /** @var Model */
     protected $entityModel;
 
+    protected $params;
+
     /**
-     * Optionally provide a current id to not check the specific record for unique
+     * Constructor for Form Configuration Custom Validation Rules
+     * The entity model, if exists, will be passed in, along with
+     * any parameters passed to the validation class
      *
-     * @param $currentId
+     *
+     * @param $entityModel
+     * @param array $params
      */
-    public function __construct($entityModel)
+    public function __construct($entityModel, array $params)
     {
         $this->entityModel = $entityModel;
+        $this->params = $params;
     }
 
 

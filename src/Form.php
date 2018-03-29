@@ -25,6 +25,7 @@ class Form
 
     public function __construct($formConfigId, Request $request, Validation $validation)
     {
+
         $this->formConfig = FormConfiguration::findOrFail($formConfigId);
         $this->request = $request;
         $this->validator = $validation;
@@ -111,13 +112,14 @@ class Form
      */
     protected function setImplicitFieldsOnModel($model, $fields, $data) {
 
+        $attributes = [];
         foreach($fields as $fieldKey => $field) {
 
             if(!is_array($field)) {
-                $model->$field = array_get($data, $field);
+                $attributes[$field] = array_get($data, $field);
             }
         }
-
+        $model->fill($attributes);
     }
 
     /**
@@ -152,10 +154,8 @@ class Form
                     foreach($field['fields'] as $relatedField) {
 
                         $attributeValue = array_get($data, $relationship . '.' . $relatedField);
+                        $attributes[$relatedField] = $attributeValue;
 
-                        if($attributeValue !== null) {
-                            $attributes[$relatedField] = $attributeValue;
-                        }
                     }
 
                     if($model->$relationship !== null) {

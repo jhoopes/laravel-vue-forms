@@ -8,6 +8,14 @@ use jhoopes\LaravelVueForms\Models\FormConfiguration;
 class Validation
 {
 
+    /** @var array $params A parameters array you can use in validation rules */
+    protected $params;
+
+    public function __construct(array $params = [])
+    {
+        $this->params = $params;
+    }
+
     protected $action;
     protected $entityModel;
 
@@ -43,8 +51,15 @@ class Validation
             if (!empty($field->field_extra['validation_rules'])) {
                 collect($field->field_extra['validation_rules'])->each(function ($validation_rule) use (&$rule) {
 
+                    $matches = [];
                     if(class_exists($validation_rule)) {
-                        $validation_rule = new $validation_rule($this->entityModel);
+                        $validation_rule = new $validation_rule($this->entityModel, $this->params);
+                    }else if(preg_match_all('{(params\..*?)}', $validation_rule, $matches)) {
+
+                        foreach($matches as $match) {
+                            $rule = str_replace('{' . $match . '}', array_get($this->params, $match));
+                        }
+
                     }
 
                     $rule[] = $validation_rule;
