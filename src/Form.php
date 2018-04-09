@@ -51,7 +51,7 @@ class Form
      */
     public function hasPermission()
     {
-        if(\Gate::denies($this->action, $this->formConfig->entity_model)) {
+        if(\Gate::denies($this->action, $this->entityModel)) {
             throw new AuthorizationException('This action (' . $this->action . ', ' .
                 $this->formConfig->entity_model .') is unauthorized');
         }
