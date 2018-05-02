@@ -81,6 +81,11 @@ class Form
         return $this->formConfig;
     }
 
+    public function getEntityModel()
+    {
+        return $this->entityModel;
+    }
+
     /**
      * Save the entity model with related fields as well.
      *
