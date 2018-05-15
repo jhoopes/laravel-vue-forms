@@ -21,7 +21,7 @@ abstract class ValidationRule
      * @param $entityModel
      * @param array $params
      */
-    public function __construct($entityModel, array $params)
+    public function __construct($entityModel = NULL, array $params = [])
     {
         $this->entityModel = $entityModel;
         $this->params = $params;
