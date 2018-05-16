@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['namespace' => 'Forms'], function() {
+Route::group(['namespace' => 'Forms', 'prefix'], function() {
 
     Route::get('/configuration/{formConfigId}', 'FormConfiguration@show');
 

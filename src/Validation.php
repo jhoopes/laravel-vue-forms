@@ -8,6 +8,24 @@ use jhoopes\LaravelVueForms\Models\FormConfiguration;
 class Validation
 {
 
+    /** @var array $params A parameters array you can use in validation rules */
+    protected $params;
+
+    public function __construct(array $params = [])
+    {
+        $this->params = $params;
+    }
+
+    protected $action;
+    protected $entityModel;
+
+    public function init($action, $entityModel)
+    {
+        $this->action = $action;
+        $this->entityModel = $entityModel;
+    }
+
+
     public function validate(FormConfiguration $formConfig, $data, $defaultData = false)
     {
         $rules = $this->getValidationRules($formConfig);
@@ -32,11 +50,23 @@ class Validation
 
             if (!empty($field->field_extra['validation_rules'])) {
                 collect($field->field_extra['validation_rules'])->each(function ($validation_rule) use (&$rule) {
+
+                    $matches = [];
+                    if(class_exists($validation_rule)) {
+                        $validation_rule = new $validation_rule($this->entityModel, $this->params);
+                    }else if(preg_match_all('{(params\..*?)}', $validation_rule, $matches)) {
+
+                        foreach($matches as $match) {
+                            $rule = str_replace('{' . $match . '}', array_get($this->params, $match));
+                        }
+
+                    }
+
                     $rule[] = $validation_rule;
                 });
             }
 
-            $rules[$field->value_field] = implode('|', $rule);
+            $rules[$field->value_field] = $rule;
         });
         return $rules;
     }
@@ -55,11 +85,15 @@ class Validation
         $validData = [];
         $formConfig->fields->each(function ($field) use (&$validData, $data, $defaultData) {
 
-            if ($field->disabled === 0 && (isset($data[$field->value_field]) || array_key_exists($field->value_field, $data))) {
-                $validData[$field->value_field] = $data[$field->value_field];
+            $dataValue = array_get($data, $field->value_field);
+            if ($field->disabled === 0 && $dataValue !== null ) {
+                array_set($validData, $field->value_field, $dataValue);
+                //$validData[$field->value_field] = $data[$field->value_field];
             } else if ($defaultData) { // default field if available
                 if($field->disabled === 1 || !isset($data[$field->value_field])) {
-                    $validData[$field->value_field] = $this->getDefaultFieldValue($field);
+
+                    array_set($validData, $field->value_field, $this->getDefaultFieldValue($field));
+                    //$validData[$field->value_field] = $this->getDefaultFieldValue($field);
                 }
             }
         });

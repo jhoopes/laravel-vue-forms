@@ -49,9 +49,16 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes()
     {
-        \Route::prefix('api/forms')
-            ->namespace($this->namespace . '\Api')
-            ->middleware(config('laravel-vue-forms.api_middleware'))
-            ->group(LVFORMS_PATH . '/routes/api.php');
+
+        if(config('laravel-vue-forms.api_middleware')) {
+            \Route::prefix('api/forms')
+                ->namespace($this->namespace . '\Api')
+                ->middleware(config('laravel-vue-forms.api_middleware'))
+                ->group(base_path('/vendor/jhoopes/laravel-vue-forms') . '/routes/api.php');
+        }else {
+            \Route::prefix('api/forms')
+                ->namespace($this->namespace . '\Api')
+                ->group(base_path('/vendor/jhoopes/laravel-vue-forms') . '/routes/api.php');
+        }
     }
 }
