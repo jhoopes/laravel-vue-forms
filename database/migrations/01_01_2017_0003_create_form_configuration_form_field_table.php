@@ -20,9 +20,11 @@ class CreateFormConfigurationFormFieldTable extends Migration
             $table->unsignedInteger('order');
 
             $table->foreign('form_configuration_id')
-                ->references('id')->on('form_configurations');
+                ->references('id')->on('form_configurations')
+                ->onDelete('cascade');
             $table->foreign('form_field_id')
-                ->references('id')->on('form_fields');
+                ->references('id')->on('form_fields')
+                ->onDelete('cascade');
         });
     }
 
