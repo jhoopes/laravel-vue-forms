@@ -95,6 +95,8 @@ class Validation
                     array_set($validData, $field->value_field, $this->getDefaultFieldValue($field));
                     //$validData[$field->value_field] = $this->getDefaultFieldValue($field);
                 }
+            }elseif($dataValue === null) {
+                array_set($validData, $field->value_field, null);
             }
         });
 
