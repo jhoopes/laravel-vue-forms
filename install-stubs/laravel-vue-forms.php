@@ -5,6 +5,8 @@ return [
 
     'api_middleware' => '',
 
-    'check_permissions' => true
+    'check_permissions' => true,
+
+    'values_soft_delete' => false,
 
 ];
