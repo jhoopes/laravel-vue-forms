@@ -3,9 +3,11 @@
 namespace jhoopes\LaravelVueForms;
 
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Collection;
 use jhoopes\LaravelVueForms\Models\FormConfiguration;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use jhoopes\LaravelVueForms\Models\Helpers\HasValues;
 
 class Form
 {
@@ -90,13 +92,19 @@ class Form
      * Save the entity model with related fields as well.
      *
      * @return null|static
+     * @throws \ReflectionException
      */
     public function save($with = [])
     {
         $fields = $this->unFlattenFields($this->getValueFields());
 
         $this->setImplicitFieldsOnModel($this->entityModel, $fields, $this->validData);
-        $this->entityModel->save(); // save the entity model to ensure it exists for related fields
+        $this->entityModel->save(); // save the entity model to ensure it exists for related fields, and EAV fields
+
+        if($fields->where('is_eav', 1)->count() > 0) {
+            $this->saveEAVFields($this->entityModel, $fields->where('is_eav', 1)->get(), $this->validData);
+        }
+
         $this->setRelatedFieldsOnModel($this->entityModel, $fields, $this->validData);
 
         return $this->entityModel->fresh($with);
@@ -111,14 +119,15 @@ class Form
     /**
      * Set the implicit fields on the base model
      *
-     * @param $model
-     * @param $fields
-     * @param $data
+     * @param Model $model
+     * @param Collection $fields
+     * @param array $data
      */
     protected function setImplicitFieldsOnModel($model, $fields, $data) {
 
         $attributes = [];
-        foreach($fields as $fieldKey => $field) {
+
+        foreach($fields->where('is_eav', 0)->get() as $fieldKey => $field) {
 
             if(!is_array($field)) {
                 $attributes[$field] = array_get($data, $field);
@@ -126,6 +135,27 @@ class Form
         }
         $model->fill($attributes);
     }
+
+    /**
+     * @param Model $model
+     * @param Collection $fields
+     * @param array $data
+     * @throws \ReflectionException
+     */
+    protected function saveEAVFields($model, $fields, $data)
+    {
+        if(!in_array((new \ReflectionClass(\get_class($model)))->getTraits(), HasValues::class)) {
+            throw new \Exception('Invalid Model for EAV');
+        }
+
+        foreach($fields as $fieldKey => $field) {
+            $model->setEAVAttribute(
+                $this->formConfig->fields->where('value_field', $field)->first,
+                array_get($data, $field)
+            );
+        }
+    }
+
 
     /**
      * Set related records fields on the base implicit model
@@ -200,11 +230,11 @@ class Form
      * ]
      *
      * @param \Illuminate\Support\Collection $fields
-     * @return array
+     * @return Collection
      */
     protected function unFlattenFields(\Illuminate\Support\Collection $fields) {
 
-        $unFlattened = [];
+        $unFlattened = collect([]);
         foreach($fields as $field) {
 
             if(str_contains($field, '.')) {
