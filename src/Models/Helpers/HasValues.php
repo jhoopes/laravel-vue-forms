@@ -14,7 +14,7 @@ trait HasValues
      */
     public function __construct(array $attributes = [])
     {
-        parent::__construct($attributes = []);
+        parent::__construct($attributes);
         array_unshift($this->with, 'eav_values');
     }
 
