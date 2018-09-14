@@ -127,7 +127,7 @@ class Form
 
         $attributes = [];
 
-        foreach($fields->where('is_eav', 0)->get() as $fieldKey => $field) {
+        foreach($fields->where('is_eav', 0)->all() as $fieldKey => $field) {
 
             if(!is_array($field)) {
                 $attributes[$field] = array_get($data, $field);
