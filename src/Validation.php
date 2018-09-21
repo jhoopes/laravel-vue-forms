@@ -52,8 +52,14 @@ class Validation
                 collect($field->field_extra['validation_rules'])->each(function ($validation_rule) use (&$rule) {
 
                     $matches = [];
+                    $ruleParams = [];
+                    if(is_array($validation_rule)) {
+                        $ruleParams = $validation_rule['params'];
+                        $validation_rule = $validation_rule['rule'];
+                    }
+
                     if(class_exists($validation_rule)) {
-                        $validation_rule = new $validation_rule($this->entityModel, $this->params);
+                        $validation_rule = new $validation_rule($this->entityModel, array_merge($this->params, $ruleParams));
                     }else if(preg_match_all('{(params\..*?)}', $validation_rule, $matches)) {
 
                         foreach($matches as $match) {
