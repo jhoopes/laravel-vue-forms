@@ -18,6 +18,8 @@ class FormField extends Model
         'widget',
         'visible',
         'disabled',
+        'is_eav',
+        'parent_id',
         'field_extra'
     ];
 
