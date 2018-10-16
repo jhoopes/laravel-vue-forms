@@ -2,6 +2,7 @@
 
 namespace jhoopes\LaravelVueForms\Providers;
 
+use Faker\Factory;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelVueFormsServiceProvider extends ServiceProvider
@@ -38,10 +39,6 @@ class LaravelVueFormsServiceProvider extends ServiceProvider
 
     public function register()
     {
-
-//        if(!defined('LVFORMS_PATH')) {
-//            define('LVFORMS_PATH', realpath(__DIR__.'/../../'));
-//        }
 
         $this->mergeConfigFrom(
             base_path('/vendor/jhoopes/laravel-vue-forms') . '/install-stubs/laravel-vue-forms.php', 'laravel-vue-forms'

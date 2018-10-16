@@ -61,6 +61,20 @@ trait HasValues
         return parent::__get($name);
     }
 
+    public function attributesToArray()
+    {
+        $normalAttrs = parent::attributesToArray();
+        $eavValues = $this->eav_values()->get();
+        $eavAttrs = [];
+        if($eavValues->count() > 0) {
+            $eavValues->each(function($eavValue) use(&$eavAttrs) {
+                $eavAttrs[$eavValue->form_field->value_field] = $eavValue->value;
+            });
+        }
+
+        return array_merge($normalAttrs, $eavAttrs);
+    }
+
     /**
      * Save the EAV field value to the model
      * TODO: Eventually, it'd be nice to hijack the set method, so the model access on setting a value also works like __get

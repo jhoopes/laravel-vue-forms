@@ -89,17 +89,15 @@ class Validation
     protected function getValidData($formConfig, $data, $defaultData = false)
     {
         $validData = [];
-        $formConfig->fields->each(function ($field) use (&$validData, $data, $defaultData) {
+        $formConfig->fields->whereNotIn('widget', ['column', 'section'])->each(function ($field) use (&$validData, $data, $defaultData) {
 
             $dataValue = array_get($data, $field->value_field);
             if ($field->disabled === 0 && $dataValue !== null ) {
                 array_set($validData, $field->value_field, $dataValue);
-                //$validData[$field->value_field] = $data[$field->value_field];
             } else if ($defaultData) { // default field if available
                 if($field->disabled === 1 || !isset($data[$field->value_field])) {
 
                     array_set($validData, $field->value_field, $this->getDefaultFieldValue($field));
-                    //$validData[$field->value_field] = $this->getDefaultFieldValue($field);
                 }
             }elseif($dataValue === null) {
                 array_set($validData, $field->value_field, null);

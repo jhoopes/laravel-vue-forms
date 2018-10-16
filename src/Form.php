@@ -92,17 +92,17 @@ class Form
      * Save the entity model with related fields as well.
      *
      * @return null|static
-     * @throws \ReflectionException
+     * @throws \InvalidArgumentException
      */
     public function save($with = [])
     {
-        $fields = $this->unFlattenFields($this->getValueFields());
+        $fields = $this->unFlattenFields($this->getNonEAVValueFields());
 
         $this->setImplicitFieldsOnModel($this->entityModel, $fields, $this->validData);
         $this->entityModel->save(); // save the entity model to ensure it exists for related fields, and EAV fields
 
-        if($fields->where('is_eav', 1)->count() > 0) {
-            $this->saveEAVFields($this->entityModel, $fields->where('is_eav', 1)->get(), $this->validData);
+        if($this->getEAVFields()->count() > 0) {
+            $this->saveEAVFields($this->entityModel, $this->validData);
         }
 
         $this->setRelatedFieldsOnModel($this->entityModel, $fields, $this->validData);
@@ -111,10 +111,16 @@ class Form
     }
 
 
-    protected function getValueFields()
+    protected function getNonEAVValueFields()
     {
-        return $this->formConfig->fields->pluck('value_field');
+        return $this->formConfig->fields->where('is_eav', 0)->pluck('value_field');
     }
+
+    protected function getEAVFields() : Collection
+    {
+        return $this->formConfig->fields->where('is_eav', 1);
+    }
+
 
     /**
      * Set the implicit fields on the base model
@@ -138,20 +144,21 @@ class Form
 
     /**
      * @param Model $model
-     * @param Collection $fields
      * @param array $data
-     * @throws \ReflectionException
+     * @throws \InvalidArgumentException
      */
-    protected function saveEAVFields($model, $fields, $data)
+    protected function saveEAVFields($model, $data)
     {
-        if(!in_array((new \ReflectionClass(\get_class($model)))->getTraits(), HasValues::class)) {
-            throw new \Exception('Invalid Model for EAV');
+        //$traits = (new \ReflectionClass(\get_class($model)))->getTraits();
+        $traits = class_uses($model);
+        if(!in_array(HasValues::class, $traits)) {
+            throw new \InvalidArgumentException('Invalid Model for EAV');
         }
 
-        foreach($fields as $fieldKey => $field) {
-            $model->setEAVAttribute(
-                $this->formConfig->fields->where('value_field', $field)->first,
-                array_get($data, $field)
+        foreach($this->getEAVFields() as $field) {
+            $model->setEAVValue(
+                $field,
+                array_get($data, $field->value_field)
             );
         }
     }
