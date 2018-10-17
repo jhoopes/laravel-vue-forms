@@ -64,10 +64,9 @@ trait HasValues
     public function attributesToArray()
     {
         $normalAttrs = parent::attributesToArray();
-        $eavValues = $this->eav_values()->get();
         $eavAttrs = [];
-        if($eavValues->count() > 0) {
-            $eavValues->each(function($eavValue) use(&$eavAttrs) {
+        if($this->eav_values->count() > 0) {
+            $this->eav_values->each(function($eavValue) use(&$eavAttrs) {
                 $eavAttrs[$eavValue->form_field->value_field] = $eavValue->value;
             });
         }
