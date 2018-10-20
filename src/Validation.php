@@ -37,7 +37,7 @@ class Validation
         return $this->getValidData($formConfig, $data, $defaultData);
     }
 
-    protected function getValidationRules(FormConfiguration $formConfig)
+    public function getValidationRules(FormConfiguration $formConfig)
     {
         $rules = [];
         $formConfig->fields->each(function ($field) use (&$rules) {
