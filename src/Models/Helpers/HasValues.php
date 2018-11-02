@@ -67,7 +67,14 @@ trait HasValues
         $eavAttrs = [];
         if($this->eav_values->count() > 0) {
             $this->eav_values->each(function($eavValue) use(&$eavAttrs) {
-                $eavAttrs[$eavValue->form_field->value_field] = $eavValue->value;
+
+                $valueField = $eavValue->form_field->value_field;
+                if(str_contains($eavValue->form_field->value_field, '.')) {
+                    // TODO: currently EAV functionality only supports a single has one parameter, when support is added for has many, many to many, this will need to change
+                    $valueField = explode('.', $eavValue->form_field->value_field)[1];
+                }
+
+                $eavAttrs[$valueField] = $eavValue->value;
             });
         }
 
