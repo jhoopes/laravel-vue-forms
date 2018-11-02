@@ -101,7 +101,7 @@ class Form
         $this->setImplicitFieldsOnModel($this->entityModel, $fields, $this->validData);
         $this->entityModel->save(); // save the entity model to ensure it exists for related fields, and EAV fields
 
-        if($this->getEAVFields()->count() > 0) {
+        if($this->getNonRelatedEAVFields()->count() > 0) {
             $this->saveEAVFields($this->entityModel, $this->validData);
         }
 
@@ -116,9 +116,18 @@ class Form
         return $this->formConfig->fields->where('is_eav', 0)->pluck('value_field');
     }
 
-    protected function getEAVFields() : Collection
+    protected function getNonRelatedEAVFields() : Collection
     {
-        return $this->formConfig->fields->where('is_eav', 1);
+        return $this->formConfig->fields->filter(function($field) {
+            return !str_contains($field->value_field, '.');
+        })->where('is_eav', 1);
+    }
+
+    protected function getRelatedEAVFields($relationship) : Collection
+    {
+        return $this->formConfig->fields->filter(function($field) use($relationship) {
+            return str_contains($field->value_field, $relationship . '.');
+        })->where('is_eav', 1);
     }
 
 
@@ -145,9 +154,10 @@ class Form
     /**
      * @param Model $model
      * @param array $data
+     * @param Collection|null $fields Default is to use non related EAV fields
      * @throws \InvalidArgumentException
      */
-    protected function saveEAVFields($model, $data)
+    protected function saveEAVFields($model, $data, $fields = null)
     {
         //$traits = (new \ReflectionClass(\get_class($model)))->getTraits();
         $traits = class_uses($model);
@@ -155,7 +165,11 @@ class Form
             throw new \InvalidArgumentException('Invalid Model for EAV');
         }
 
-        foreach($this->getEAVFields() as $field) {
+        if($fields === null) {
+            $fields = $this->getNonRelatedEAVFields();
+        }
+
+        foreach($fields as $field) {
             $model->setEAVValue(
                 $field,
                 array_get($data, $field->value_field)
@@ -205,6 +219,11 @@ class Form
                         $relatedModel->fill($attributes)->save();
                     }else {
                         $relatedModel = $model->$relationship()->create($attributes);
+                    }
+
+                    $eavFields = $this->getRelatedEAVFields($relationship);
+                    if($eavFields->count() > 0) {
+                        $this->saveEAVFields($relatedModel, $data, $eavFields);
                     }
 
                 }
