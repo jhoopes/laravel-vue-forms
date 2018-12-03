@@ -4,6 +4,7 @@ namespace jhoopes\LaravelVueForms;
 
 
 use jhoopes\LaravelVueForms\Models\FormConfiguration;
+use Mews\Purifier\Purifier;
 
 class Validation
 {
@@ -11,9 +12,13 @@ class Validation
     /** @var array $params A parameters array you can use in validation rules */
     protected $params;
 
+    /** @var Purifier  */
+    protected $purifier;
+
     public function __construct(array $params = [])
     {
         $this->params = $params;
+        $this->purifier = app('purifier');
     }
 
     protected $action;
@@ -92,7 +97,16 @@ class Validation
         $formConfig->fields->whereNotIn('widget', ['column', 'section'])->each(function ($field) use (&$validData, $data, $defaultData) {
 
             $dataValue = array_get($data, $field->value_field);
-            if ($field->disabled === 0 && $dataValue !== null ) {
+            if($field->widget === 'wysiwyg' && $dataValue !== null) {
+
+                if($field->field_extra['purifier_config']) {
+                    $dataValue = $this->purifier->clean($dataValue, $field->field_extra['purifier_config']);
+                } else {
+                    $dataValue = $this->purifier->clean($dataValue);
+                }
+
+                array_set($validData, $field->value_field, $dataValue);
+            }else if ($field->disabled === 0 && $dataValue !== null ) {
                 array_set($validData, $field->value_field, $dataValue);
             } else if ($defaultData) { // default field if available
                 if($field->disabled === 1 || !isset($data[$field->value_field])) {
