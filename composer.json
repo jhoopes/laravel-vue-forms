@@ -14,7 +14,10 @@
   "autoload": {
     "psr-4": {
       "jhoopes\\LaravelVueForms\\": "src/"
-    }
+    },
+    "files": [
+      "src/helpers.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {

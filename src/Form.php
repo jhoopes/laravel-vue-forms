@@ -159,8 +159,7 @@ class Form
      */
     protected function saveEAVFields($model, $data, $fields = null)
     {
-        //$traits = (new \ReflectionClass(\get_class($model)))->getTraits();
-        $traits = class_uses($model);
+        $traits = class_uses_deep($model);
         if(!in_array(HasValues::class, $traits)) {
             throw new \InvalidArgumentException('Invalid Model for EAV');
         }
