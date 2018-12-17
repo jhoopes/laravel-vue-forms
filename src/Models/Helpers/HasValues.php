@@ -26,9 +26,9 @@ trait HasValues
         self::deleting(function($item) {
 
             if(config('laravel-vue-forms.uses_soft_delete')) {
-                $this->eav_values()->update(['deleted_at' => Carbon::now()]);
+                $item->eav_values()->update(['deleted_at' => Carbon::now()]);
             } else {
-                $this->eav_values()->delete();
+                $item->eav_values()->delete();
             }
 
         });
