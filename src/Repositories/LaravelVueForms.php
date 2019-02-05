@@ -110,7 +110,8 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
      * @param $fields
      * @param $data
      */
-    public function setRelatedFieldsOnModel($model, $fields, $data, $formConfig) {
+    public function setRelatedFieldsOnModel($model, $fields, $data, $formConfig)
+    {
 
 
         foreach($fields as $relationship => $field) {
@@ -172,7 +173,8 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
      * @param \Illuminate\Support\Collection $fields
      * @return Collection
      */
-    public function unFlattenFields(\Illuminate\Support\Collection $fields) {
+    public function unFlattenFields(\Illuminate\Support\Collection $fields) : Collection
+    {
 
         $unFlattened = collect([]);
         foreach($fields as $field) {
