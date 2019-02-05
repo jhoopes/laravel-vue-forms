@@ -2,12 +2,20 @@
 
 namespace jhoopes\LaravelVueForms\Repositories;
 
-
+use Mews\Purifier\Purifier;
 use Illuminate\Support\Collection;
 use jhoopes\LaravelVueForms\Models\Helpers\HasValues;
 
 class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories\LaravelVueForms
 {
+
+    /** @var Purifier  */
+    protected $purifier;
+
+    public function __construct()
+    {
+        $this->purifier = app('purifier');
+    }
 
     /**
      * Get the value fields of NonEAV Fields for un-flattening them to set up saving structure
@@ -208,6 +216,64 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
         }
 
         return $unFlattened;
+    }
+
+
+
+    // Validation Helpers
+
+    /**
+     * Transform a data array into the valid data array based on form configuration
+     *
+     * @param $formConfig
+     * @param $data
+     * @param bool $defaultData
+     * @return array
+     */
+    public function getValidData($formConfig, $data, $defaultData = false) : array
+    {
+        $validData = [];
+        $formConfig->fields->whereNotIn('widget', ['column', 'section'])->each(function ($field) use (&$validData, $data, $defaultData) {
+
+            $dataValue = array_get($data, $field->value_field);
+            if($field->widget === 'wysiwyg' && $dataValue !== null) {
+
+                if($field->field_extra['purifier_config']) {
+                    $dataValue = $this->purifier->clean($dataValue, $field->field_extra['purifier_config']);
+                } else {
+                    $dataValue = $this->purifier->clean($dataValue);
+                }
+
+                array_set($validData, $field->value_field, $dataValue);
+            }else if ($field->disabled === 0 && $dataValue !== null ) {
+                array_set($validData, $field->value_field, $dataValue);
+            } else if ($defaultData) { // default field if available
+                if($field->disabled === 1 || !isset($data[$field->value_field])) {
+
+                    array_set($validData, $field->value_field, $this->getDefaultFieldValue($field));
+                }
+            }elseif($dataValue === null) {
+                array_set($validData, $field->value_field, null);
+            }
+        });
+
+        return $validData;
+    }
+
+    /**
+     * Get the default for a field
+     *
+     * @param $field
+     * @return mixed|null
+     */
+    public function getDefaultFieldValue($field)
+    {
+
+        if(isset($field->field_extra['default'])) {
+            return $field->field_extra['default'];
+        }
+
+        return null;
     }
 
 

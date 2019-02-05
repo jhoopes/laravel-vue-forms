@@ -98,4 +98,23 @@ interface LaravelVueForms
      */
     public function unFlattenFields(\Illuminate\Support\Collection $fields) : Collection;
 
+
+
+    /**
+     * Transform a data array into the valid data array based on form configuration
+     *
+     * @param $formConfig
+     * @param $data
+     * @param bool $defaultData
+     * @return array
+     */
+    public function getValidData($formConfig, $data, $defaultData = false) : array;
+
+    /**
+     * Get the default for a field
+     *
+     * @param $field
+     * @return mixed|null
+     */
+    public function getDefaultFieldValue($field);
 }
