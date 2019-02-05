@@ -99,7 +99,7 @@ class Form
     {
         $fields = $this->laravelVueFormsRepository
             ->unFlattenFields(
-                $this->laravelVueFormsRepository->getNonEAVValueFields()
+                $this->laravelVueFormsRepository->getNonEAVValueFields($this->formConfig)
             );
 
         $this->laravelVueFormsRepository
@@ -108,11 +108,16 @@ class Form
         // save the entity model to ensure it exists for related fields, and EAV fields
         $this->entityModel->save();
 
-        if($this->getNonRelatedEAVFields()->count() > 0) {
-            $this->saveEAVFields($this->entityModel, $this->validData);
+        if($this->laravelVueFormsRepository->getNonRelatedEAVFields($this->formConfig)->count() > 0) {
+            $this->laravelVueFormsRepository->saveEAVFields(
+                $this->entityModel,
+                $this->validData,
+                $this->laravelVueFormsRepository->getNonRelatedEAVFields($this->formConfig)
+            );
         }
 
-        $this->setRelatedFieldsOnModel($this->entityModel, $fields, $this->validData);
+        $this->laravelVueFormsRepository
+            ->setRelatedFieldsOnModel($this->entityModel, $fields, $this->validData, $this->formConfig);
 
         return $this->entityModel->fresh($with);
     }

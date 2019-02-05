@@ -2,7 +2,9 @@
 
 namespace jhoopes\LaravelVueForms\Repositories;
 
-use mysql_xdevapi\Collection;
+
+use Illuminate\Support\Collection;
+use jhoopes\LaravelVueForms\Models\Helpers\HasValues;
 
 class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories\LaravelVueForms
 {
@@ -70,16 +72,16 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
      * @param Collection|null $fields Default is to use non related EAV fields
      * @throws \InvalidArgumentException
      */
-    public function saveEAVFields($model, $data, $fields = null)
+    public function saveEAVFields($model, $data, $fields)
     {
         $traits = class_uses_deep($model);
         if(!in_array(HasValues::class, $traits)) {
             throw new \InvalidArgumentException('Invalid Model for EAV');
         }
 
-        if($fields === null) {
-            $fields = $this->getNonRelatedEAVFields();
-        }
+//        if($fields === null) {
+//            $fields = $this->getNonRelatedEAVFields();
+//        }
 
         foreach($fields as $field) {
             $model->setEAVValue(
