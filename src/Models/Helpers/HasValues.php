@@ -61,6 +61,20 @@ trait HasValues
         return parent::__get($name);
     }
 
+    public function __isset($name)
+    {
+        if($name !== 'eav_values' &&
+            $this->eav_values !== null &&
+            $eavValue = $this->eav_values->filter(function($eavValue) use($name) {
+                return $eavValue->form_field->value_field === $name;
+            })->first() ) {
+
+            return ! is_null($eavValue->value);
+        }
+
+        return parent::__isset($name);
+    }
+
     public function attributesToArray()
     {
         $normalAttrs = parent::attributesToArray();
@@ -90,13 +104,30 @@ trait HasValues
      */
     public function setEAVValue(Model $field, $value)
     {
-        $this->eav_values()->updateOrCreate([
-            'form_field_id' => $field->id,
-            'entity_type' => self::class,
-            'entity_id' => $this->getKey(),
-        ], [
-            'value' => $value
-        ]);
+//        $this->eav_values()->updateOrCreate([
+//            'form_field_id' => $field->id,
+//            'entity_type' => self::class,
+//            'entity_id' => $this->getKey(),
+//        ], [
+//            'value' => $value
+//        ]);
+
+        // instead of updating or creating on the relationship through queries, we should really update the existing
+        // form value record so that the currently loaded model's relationship that is cached will be updated as well
+        $eavValue = $this->eav_values
+            ->where('form_field_id', $field->id)
+            ->first();
+
+        // if the FormValue record for this field hasn't been created, create it
+        if(!$eavValue) {
+            $this->eav_values()->create([
+                'form_field_id' => $field->id,
+                'value' => $value
+            ]);
+        } else {
+            $eavValue->value = $value;
+            $eavValue->save();
+        }
     }
 
 }
