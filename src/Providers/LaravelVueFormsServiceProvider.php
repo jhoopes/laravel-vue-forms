@@ -4,6 +4,7 @@ namespace jhoopes\LaravelVueForms\Providers;
 
 use Faker\Factory;
 use Illuminate\Support\ServiceProvider;
+use jhoopes\LaravelVueForms\Contracts\Repositories\LaravelVueForms;
 
 class LaravelVueFormsServiceProvider extends ServiceProvider
 {
@@ -43,6 +44,8 @@ class LaravelVueFormsServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             base_path('/vendor/jhoopes/laravel-vue-forms') . '/install-stubs/laravel-vue-forms.php', 'laravel-vue-forms'
         );
+
+        $this->app->bind(LaravelVueForms::class, \jhoopes\LaravelVueForms\Repositories\LaravelVueForms::class);
 
         $this->app->register(RouteServiceProvider::class);
     }
