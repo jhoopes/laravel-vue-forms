@@ -122,6 +122,7 @@ trait HasValues
         if(!$eavValue) {
             $this->eav_values()->create([
                 'form_field_id' => $field->id,
+                'entity_type' => self::class,
                 'value' => $value
             ]);
         } else {
