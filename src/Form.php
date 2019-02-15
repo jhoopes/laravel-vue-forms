@@ -144,7 +144,7 @@ class Form
 
         foreach($fields->where('is_eav', 0)->all() as $fieldKey => $field) {
 
-            if(!is_array($field)) {
+            if(!is_array($field) && array_has($data, $field)) {
                 $attributes[$field] = array_get($data, $field);
             }
         }
@@ -207,10 +207,10 @@ class Form
                     $attributes = [];
 
                     foreach($field['fields'] as $relatedField) {
-
-                        $attributeValue = array_get($data, $relationship . '.' . $relatedField);
-                        $attributes[$relatedField] = $attributeValue;
-
+                        if(array_has($data, $relationship . '.' . $relatedField)) {
+                            $attributeValue = array_get($data, $relationship . '.' . $relatedField);
+                            $attributes[$relatedField] = $attributeValue;
+                        }
                     }
 
                     if($model->$relationship !== null) {
