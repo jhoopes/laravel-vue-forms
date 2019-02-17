@@ -235,8 +235,14 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
         $validData = [];
         $formConfig->fields->whereNotIn('widget', ['column', 'section'])->each(function ($field) use (&$validData, $data, $defaultData) {
 
+            // only attempt to set the field in valid data if the key is set in data,
+            // and if we're not on a field that's disabled and not defaulting the data for it
+            if(!array_has($data, $field->value_field) && !($field->disabled === 1 && $defaultData) ) {
+                return;
+            }
+
             $dataValue = array_get($data, $field->value_field);
-            if($field->widget === 'wysiwyg' && $dataValue !== null) {
+            if($field->widget === 'wysiwyg' && $dataValue !== null && $field->disabled === 0) {
 
                 if($field->field_extra['purifier_config']) {
                     $dataValue = $this->purifier->clean($dataValue, $field->field_extra['purifier_config']);
