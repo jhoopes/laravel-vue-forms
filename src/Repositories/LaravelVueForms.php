@@ -244,7 +244,7 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
             $dataValue = array_get($data, $field->value_field);
             if($field->widget === 'wysiwyg' && $dataValue !== null && $field->disabled === 0) {
 
-                if($field->field_extra['purifier_config']) {
+                if(isset($field->field_extra['purifier_config'])) {
                     $dataValue = $this->purifier->clean($dataValue, $field->field_extra['purifier_config']);
                 } else {
                     $dataValue = $this->purifier->clean($dataValue);
