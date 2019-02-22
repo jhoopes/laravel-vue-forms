@@ -120,11 +120,13 @@ trait HasValues
 
         // if the FormValue record for this field hasn't been created, create it
         if(!$eavValue) {
-            $this->eav_values()->create([
+            $newValue = $this->eav_values()->create([
                 'form_field_id' => $field->id,
                 'entity_type' => self::class,
                 'value' => $value
             ]);
+            // push the new value onto our already loaded relationship
+            $this->eav_values->push($newValue);
         } else {
             $eavValue->value = $value;
             $eavValue->save();
