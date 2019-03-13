@@ -53,7 +53,8 @@ trait HasValues
         if($name !== 'eav_values' &&
             $this->eav_values !== null &&
             $eavValue = $this->eav_values->filter(function($eavValue) use($name) {
-                return $eavValue->form_field->value_field === $name;
+                $valueFieldParts = explode('.', $eavValue->form_field->value_field);
+                return end($valueFieldParts) === $name;
         })->first() ) {
             return $eavValue->value;
         }
