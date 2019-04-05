@@ -34,6 +34,10 @@ class Validation
     {
         $rules = $this->getValidationRules($formConfig);
 
+        if (!is_array($data)) { // meaning null, or not a valid laravel vue form request
+            $data = [];
+        }
+
         $validator = \Validator::make($data, $rules);
         $validator->setAttributeNames($this->getAttributeNames($formConfig));
         $validator->validate();
