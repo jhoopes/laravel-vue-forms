@@ -3,13 +3,12 @@
 namespace jhoopes\LaravelVueForms\Models\Helpers;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Database\Eloquent\Model;
 use jhoopes\LaravelVueForms\Models\FormValue;
 
 trait HasValues
 {
-
     protected $eavChanges = [
         'old' => [],
         'new' => [],
@@ -31,13 +30,11 @@ trait HasValues
     public static function bootHasValues()
     {
         self::deleting(function($item) {
-
-            if(config('laravel-vue-forms.uses_soft_delete')) {
+            if (config('laravel-vue-forms.uses_soft_delete')) {
                 $item->eav_values()->update(['deleted_at' => Carbon::now()]);
             } else {
                 $item->eav_values()->delete();
             }
-
         });
     }
 
@@ -50,8 +47,7 @@ trait HasValues
      */
     protected function hasChanges($changes, $attributes = null)
     {
-
-        if(parent::hasChanges($changes, $attributes)) {
+        if (parent::hasChanges($changes, $attributes)) {
             return true;
         }
 
@@ -86,12 +82,12 @@ trait HasValues
      */
     public function __get($name)
     {
-        if($name !== 'eav_values' &&
+        if ($name !== 'eav_values' &&
             $this->eav_values !== null &&
-            $eavValue = $this->eav_values->filter(function($eavValue) use($name) {
+            $eavValue = $this->eav_values->filter(function($eavValue) use ($name) {
                 $valueFieldParts = explode('.', $eavValue->form_field->value_field);
                 return end($valueFieldParts) === $name;
-        })->first() ) {
+            })->first()) {
             return $eavValue->value;
         }
 
@@ -100,12 +96,11 @@ trait HasValues
 
     public function __isset($name)
     {
-        if($name !== 'eav_values' &&
+        if ($name !== 'eav_values' &&
             $this->eav_values !== null &&
-            $eavValue = $this->eav_values->filter(function($eavValue) use($name) {
+            $eavValue = $this->eav_values->filter(function($eavValue) use ($name) {
                 return $eavValue->form_field->value_field === $name;
-            })->first() ) {
-
+            })->first()) {
             return ! is_null($eavValue->value);
         }
 
@@ -116,11 +111,10 @@ trait HasValues
     {
         $normalAttrs = parent::attributesToArray();
         $eavAttrs = [];
-        if($this->eav_values->count() > 0) {
-            $this->eav_values->each(function($eavValue) use(&$eavAttrs) {
-
+        if ($this->eav_values->count() > 0) {
+            $this->eav_values->each(function($eavValue) use (&$eavAttrs) {
                 $valueField = $eavValue->form_field->value_field;
-                if(str_contains($eavValue->form_field->value_field, '.')) {
+                if (str_contains($eavValue->form_field->value_field, '.')) {
                     // TODO: currently EAV functionality only supports a single has one parameter, when support is added for has many, many to many, this will need to change
                     $valueField = explode('.', $eavValue->form_field->value_field)[1];
                 }
@@ -148,7 +142,7 @@ trait HasValues
             ->first();
 
         // if the FormValue record for this field hasn't been created, create it
-        if(!$eavValue) {
+        if (!$eavValue) {
             $oldValue = '';
             $newValue = $this->eav_values()->create([
                 'form_field_id' => $field->id,
@@ -164,10 +158,9 @@ trait HasValues
         }
 
 
-        if($oldValue !== $value) {
+        if ($oldValue !== $value) {
             $this->eavChanges['old'][$field->value_field] = $oldValue;
             $this->eavChanges['new'][$field->value_field] = $value;
         }
     }
-
 }

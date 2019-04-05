@@ -34,7 +34,7 @@ class Validation
     {
         $rules = $this->getValidationRules($formConfig);
 
-        if(!is_array($data)) { // meaning null, or not a valid laravel vue form request
+        if (!is_array($data)) { // meaning null, or not a valid laravel vue form request
             $data = [];
         }
 
