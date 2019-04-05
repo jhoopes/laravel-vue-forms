@@ -4,6 +4,7 @@ namespace jhoopes\LaravelVueForms\Models\Helpers;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use jhoopes\LaravelVueForms\Models\FormValue;
 
 trait HasValues
@@ -38,6 +39,35 @@ trait HasValues
             }
 
         });
+    }
+
+    /**
+     * OVERRIDE of Laravel's HasChanges Method to also check for EAV changes
+     *
+     * @param  array  $changes
+     * @param  array|string|null  $attributes
+     * @return bool
+     */
+    protected function hasChanges($changes, $attributes = null)
+    {
+
+        if(parent::hasChanges($changes, $attributes)) {
+            return true;
+        }
+
+        /**
+         * check if all or a specific EAV attribute has changed
+         */
+        if (empty($attributes)) {
+            return count($this->eavChanges['new']) > 0;
+        }
+        foreach (Arr::wrap($attributes) as $attribute) {
+            if (array_key_exists($attribute, $this->eavChanges['new'])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
