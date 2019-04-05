@@ -8,6 +8,12 @@ use jhoopes\LaravelVueForms\Models\FormValue;
 
 trait HasValues
 {
+
+    protected $eavChanges = [
+        'old' => [],
+        'new' => [],
+    ];
+
     /**
      * Set the eav_values eager load as the first item on the model's with in order to avoid n+1
      * and so that we don't get a loop with the __get function
@@ -105,14 +111,6 @@ trait HasValues
      */
     public function setEAVValue(Model $field, $value)
     {
-//        $this->eav_values()->updateOrCreate([
-//            'form_field_id' => $field->id,
-//            'entity_type' => self::class,
-//            'entity_id' => $this->getKey(),
-//        ], [
-//            'value' => $value
-//        ]);
-
         // instead of updating or creating on the relationship through queries, we should really update the existing
         // form value record so that the currently loaded model's relationship that is cached will be updated as well
         $eavValue = $this->eav_values
@@ -121,6 +119,7 @@ trait HasValues
 
         // if the FormValue record for this field hasn't been created, create it
         if(!$eavValue) {
+            $oldValue = '';
             $newValue = $this->eav_values()->create([
                 'form_field_id' => $field->id,
                 'entity_type' => self::class,
@@ -129,8 +128,15 @@ trait HasValues
             // push the new value onto our already loaded relationship
             $this->eav_values->push($newValue);
         } else {
+            $oldValue = $eavValue->value;
             $eavValue->value = $value;
             $eavValue->save();
+        }
+
+
+        if($oldValue !== $value) {
+            $this->eavChanges['old'][$field->value_field] = $oldValue;
+            $this->eavChanges['new'][$field->value_field] = $value;
         }
     }
 
