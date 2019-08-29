@@ -38,6 +38,17 @@ trait HasValues
         });
     }
 
+    public function getEAVChanges($type = null, $field = null)
+    {
+        if($type !== null && $field === null) {
+            return Arr::get($this->eavChanges, $type . '.' . $field);
+        } else if ($type !== null) {
+            return Arr::get($this->eavChanges, $type);
+        } else {
+            return $this->eavChanges;
+        }
+    }
+
     /**
      * OVERRIDE of Laravel's HasChanges Method to also check for EAV changes
      *
@@ -54,17 +65,9 @@ trait HasValues
         /**
          * check if all or a specific EAV attribute has changed
          */
-        if (empty($attributes)) {
-            return count($this->eavChanges['new']) > 0;
-        }
-        foreach (Arr::wrap($attributes) as $attribute) {
-            if (array_key_exists($attribute, $this->eavChanges['new'])) {
-                return true;
-            }
-        }
-
-        return false;
+        return count($this->eavChanges['new']) > 0;
     }
+
 
 
     public function eav_values()
