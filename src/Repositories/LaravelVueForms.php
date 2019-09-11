@@ -260,8 +260,6 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
             }
         });
 
-        apidd($validData, $formConfig->fields->where('name', 'trm_building_type_exterior')->first()->toArray());
-
         return $validData;
     }
 
