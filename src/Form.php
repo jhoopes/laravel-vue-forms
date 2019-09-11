@@ -26,12 +26,15 @@ class Form
 
     protected $validData;
 
-    public function __construct($formConfigId, Request $request, Validation $validation)
+    protected $defaultDataOnValidate;
+
+    public function __construct($formConfigId, Request $request, Validation $validation, $defaultDataOnValidate = false)
     {
         $this->laravelVueFormsRepository = app(LaravelVueForms::class);
         $this->formConfig = FormConfiguration::findOrFail($formConfigId);
         $this->request = $request;
         $this->validator = $validation;
+        $this->defaultDataOnValidate = $defaultDataOnValidate;
 
         if($this->request->has('entityId')) {
             $this->action = 'update';
@@ -69,7 +72,7 @@ class Form
      */
     public function validate()
     {
-        $this->validData = $this->validator->validate($this->formConfig, $this->request->get('data'));
+        $this->validData = $this->validator->validate($this->formConfig, $this->request->get('data'), $this->defaultDataOnValidate);
 
         return $this;
     }
