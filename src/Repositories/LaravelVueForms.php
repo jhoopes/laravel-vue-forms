@@ -232,13 +232,14 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
      */
     public function getValidData($formConfig, $data, $defaultData = false) : array
     {
-        $validData = collect([]);
-        $formConfig->fields->whereNotIn('widget', ['column', 'section'])->each(function ($field) use ($validData, $data, $defaultData) {
+        $validData = [];
+        $fields = $formConfig->fields->whereNotIn('widget', ['column', 'section']);
+        foreach($fields as $field) {
 
             // only attempt to set the field in valid data if the key is set in data,
             // and if we're not on a field that's disabled and not defaulting the data for it
-            if(!array_has($data, $field->value_field) && !($field->disabled === 1 && $defaultData) ) {
-                return;
+            if(empty($field->value_field) || (!array_has($data, $field->value_field) && !($field->disabled === 1 && $defaultData) ) ) {
+                continue;
             }
 
             $dataValue = array_get($data, $field->value_field);
@@ -258,9 +259,9 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
             }elseif($dataValue === null) {
                 array_set($validData, $field->value_field, null);
             }
-        });
+        }
 
-        return $validData->toArray();
+        return $validData;
     }
 
     /**
