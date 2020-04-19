@@ -4,6 +4,7 @@ namespace jhoopes\LaravelVueForms\Providers;
 
 use Faker\Factory;
 use Illuminate\Support\ServiceProvider;
+use jhoopes\LaravelVueForms\Commands\SeedAdmin;
 use jhoopes\LaravelVueForms\Contracts\Repositories\LaravelVueForms;
 
 class LaravelVueFormsServiceProvider extends ServiceProvider
@@ -13,18 +14,15 @@ class LaravelVueFormsServiceProvider extends ServiceProvider
     {
         $this->defineResources();
         $this->definePublishes();
+        $this->defineCommands();
 
-        // Bind a custom Model Factory to the container so we can set our own Model Factory Class on it.
-        $this->app->singleton('jhoopes\LaravelVueForms\ModelFactory', function() {
-            $pathToFactories = base_path('/vendor/jhoopes/laravel-vue-forms') . '/database/factories';
-            return Factory::construct(\Faker\Factory::create(), $pathToFactories);
-        });
+        $this->loadFactoriesFrom(base_path('/vendor/jhoopes/laravel-vue-forms/database/factories'));
     }
 
 
     protected function defineResources()
     {
-
+        $this->loadViewsFrom(base_path('vendor/jhoopes/laravel-vue-forms/resources/views'), 'forms');
         $this->loadMigrationsFrom(base_path('/vendor/jhoopes/laravel-vue-forms') . '/database/migrations');
 
     }
@@ -32,9 +30,18 @@ class LaravelVueFormsServiceProvider extends ServiceProvider
     protected function definePublishes()
     {
         $this->publishes([
-            base_path('/vendor/jhoopes/laravel-vue-forms') . '/install-stubs/laravel-vue-forms.php'
+            base_path('/vendor/jhoopes/laravel-vue-forms') . '/config/laravel-vue-forms.php'
                 => config_path('laravel-vue-forms.php'),
         ]);
+    }
+
+    protected function defineCommands()
+    {
+        if($this->app->runningInConsole()) {
+            $this->commands([
+                SeedAdmin::class,
+            ]);
+        }
     }
 
 
@@ -42,10 +49,11 @@ class LaravelVueFormsServiceProvider extends ServiceProvider
     {
 
         $this->mergeConfigFrom(
-            base_path('/vendor/jhoopes/laravel-vue-forms') . '/install-stubs/laravel-vue-forms.php', 'laravel-vue-forms'
+            base_path('/vendor/jhoopes/laravel-vue-forms/config/laravel-vue-forms.php'), 'laravel-vue-forms'
         );
 
         $this->app->bind(LaravelVueForms::class, \jhoopes\LaravelVueForms\Repositories\LaravelVueForms::class);
+        $this->app->bind('laravel_vue_forms', \jhoopes\LaravelVueForms\LaravelVueForms::class);
 
         $this->app->register(RouteServiceProvider::class);
     }

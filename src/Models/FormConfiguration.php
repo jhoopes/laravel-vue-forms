@@ -11,8 +11,16 @@ class FormConfiguration extends Model
 
     protected $fillable = [
         'name',
+        'type',
+        'active',
         'entity_name',
-        'entity_model'
+        'entity_model',
+        'options'
+    ];
+
+    protected $casts = [
+        'active' => 'boolean',
+        'options' => 'array',
     ];
 
     public function fields()

@@ -29,7 +29,10 @@
     "laravel": {
       "providers": [
         "jhoopes\\LaravelVueForms\\Providers\\LaravelVueFormsServiceProvider"
-      ]
+      ],
+      "aliases": {
+        "LaravelForms": "jhoopes\\LaravelVueForms\\Facades\\LaravelVueForms"
+      }
     }
   }
 }

@@ -8,7 +8,10 @@ class FormField extends Model
 {
 
     public $casts = [
-        'field_extra' => 'array'
+        'field_extra' => 'array',
+        'visible' => 'boolean',
+        'disabled' => 'boolean',
+        'is_eav' => 'boolean',
     ];
 
     protected $fillable = [
@@ -20,6 +23,7 @@ class FormField extends Model
         'disabled',
         'is_eav',
         'parent_id',
+        'cast',
         'field_extra'
     ];
 
