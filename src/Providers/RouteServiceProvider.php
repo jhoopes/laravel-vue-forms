@@ -15,7 +15,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $namespace = 'jhoopes\LaravelVueForms\Http\Controllers';
+    protected $namespace = '\jhoopes\LaravelVueForms\Http\Controllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.

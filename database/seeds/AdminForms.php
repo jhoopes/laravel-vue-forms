@@ -95,7 +95,7 @@ return [
                 ],
                 'options_config' => [
                     'optionsURL' => LaravelVueForms::adminApiPrefix() . '/entity_types',
-                    'optionLabelField' => 'name',
+                    'optionLabelField' => 'title',
                     'optionValueField' => 'name',
                 ]
             ]
@@ -115,6 +115,12 @@ return [
                 'validation_rules' => [
                     'nullable',
                     'array',
+                    'json'
+                ],
+                'editorOptions' => [
+                    'ace_options' => [],
+                    'mode' => 'json',
+                    'height' => '200px'
                 ]
             ]
         ],
