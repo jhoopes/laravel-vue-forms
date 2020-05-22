@@ -2,6 +2,8 @@
 
 namespace jhoopes\LaravelVueForms\Repositories;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Mews\Purifier\Purifier;
 use Illuminate\Support\Collection;
 use jhoopes\LaravelVueForms\Models\Helpers\HasValues;
@@ -37,7 +39,7 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
     public function getNonRelatedEAVFields($formConfig) : Collection
     {
         return $formConfig->fields->filter(function($field) {
-            return !str_contains($field->value_field, '.');
+            return !Str::contains($field->value_field, '.');
         })->where('is_eav', 1);
     }
 
@@ -51,7 +53,7 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
     public function getRelatedEAVFields($relationship, $formConfig) : Collection
     {
         return $formConfig->fields->filter(function($field) use($relationship) {
-            return str_contains($field->value_field, $relationship . '.');
+            return Str::contains($field->value_field, $relationship . '.');
         })->where('is_eav', 1);
     }
 
@@ -67,8 +69,8 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
         $attributes = [];
 
         foreach($fields as $fieldKey => $field) {
-            if(!is_array($field) && array_has($data, $field)) {
-                $attributes[$field] = array_get($data, $field);
+            if(!is_array($field) && Arr::has($data, $field)) {
+                $attributes[$field] = Arr::get($data, $field);
             }
         }
         $model->fill($attributes);
@@ -94,7 +96,7 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
         foreach($fields as $field) {
             $model->setEAVValue(
                 $field,
-                array_get($data, $field->value_field)
+                Arr::get($data, $field->value_field)
             );
         }
     }
@@ -131,8 +133,8 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
                     $attributes = [];
 
                     foreach($field['fields'] as $relatedField) {
-                        if(array_has($data, $relationship . '.' . $relatedField)) {
-                            $attributeValue = array_get($data, $relationship . '.' . $relatedField);
+                        if(Arr::has($data, $relationship . '.' . $relatedField)) {
+                            $attributeValue = Arr::get($data, $relationship . '.' . $relatedField);
                             $attributes[$relatedField] = $attributeValue;
                         }
                     }
@@ -187,7 +189,7 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
         $unFlattened = collect([]);
         foreach($fields as $field) {
 
-            if(str_contains($field, '.')) {
+            if(Str::contains($field, '.')) {
 
 
                 $keys = explode('.', $field);
@@ -238,11 +240,11 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
 
             // only attempt to set the field in valid data if the key is set in data,
             // and if we're not on a field that's disabled and not defaulting the data for it
-            if(empty($field->value_field) || (!array_has($data, $field->value_field) && !($field->disabled === 1 && $defaultData) ) ) {
+            if(empty($field->value_field) || (!Arr::has($data, $field->value_field) && !($field->disabled === 1 && $defaultData) ) ) {
                 continue;
             }
 
-            $dataValue = array_get($data, $field->value_field);
+            $dataValue = Arr::get($data, $field->value_field);
             if($field->widget === 'wysiwyg' && $dataValue !== null && $field->disabled === 0) {
 
                 if(isset($field->field_extra['purifier_config'])) {
@@ -251,13 +253,13 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
                     $dataValue = $this->purifier->clean($dataValue);
                 }
 
-                array_set($validData, $field->value_field, $dataValue);
+                Arr::set($validData, $field->value_field, $dataValue);
             }else if ($field->disabled === 0 && $dataValue !== null ) {
-                array_set($validData, $field->value_field, $dataValue);
+                Arr::set($validData, $field->value_field, $dataValue);
             } else if ($defaultData && (!isset($data[$field->value_field]) || $dataValue === null)) { // default field if available
-                array_set($validData, $field->value_field, $this->getDefaultFieldValue($field));
+                Arr::set($validData, $field->value_field, $this->getDefaultFieldValue($field));
             }elseif($dataValue === null) {
-                array_set($validData, $field->value_field, null);
+                Arr::set($validData, $field->value_field, null);
             }
         }
 
