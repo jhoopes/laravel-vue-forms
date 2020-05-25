@@ -38,6 +38,6 @@ class FormConfigurationsController extends Controller
             return $query->all();
         }
 
-        return $query->paginate($pp);
+        return $this->collectedResponse($query->paginate($pp), [], ['fields']);
     }
 }

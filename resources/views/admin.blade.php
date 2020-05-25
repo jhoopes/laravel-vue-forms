@@ -15,6 +15,7 @@
         window.formAdmin.webAdminPrefix = '{{ \jhoopes\LaravelVueForms\Facades\LaravelVueForms::webAdminPrefix() }}'
         window.formAdmin.apiPrefix      = '{{ \jhoopes\LaravelVueForms\Facades\LaravelVueForms::apiPrefix() }}'
         window.formAdmin.apiAdminPrefix = '{{ \jhoopes\LaravelVueForms\Facades\LaravelVueForms::adminApiPrefix() }}'
+        window.formAdmin.useJsonApi     = {{ \jhoopes\LaravelVueForms\Facades\LaravelVueForms::useJSONAPI() ? 'true' : 'false' }}
     </script>
 </head>
 <body>

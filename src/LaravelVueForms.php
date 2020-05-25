@@ -25,6 +25,7 @@ class LaravelVueForms
     protected static $adminApiPrefix = '/api/forms/admin';
     protected static $webAdminPrefix = '/admin';
     protected static $adminAuthorization = '';
+    protected static $useJSONAPI = false;
 
     public static function apiPrefix($apiPrefix = null)
     {
@@ -61,6 +62,15 @@ class LaravelVueForms
         }
 
         return self::$adminAuthorization;
+    }
+
+    public static function useJSONApi($use = null)
+    {
+        if($use) {
+            self::$useJSONAPI = $use;
+        }
+
+        return self::$useJSONAPI;
     }
 
 }
