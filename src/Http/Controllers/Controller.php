@@ -16,6 +16,7 @@ use jhoopes\LaravelVueForms\Http\JSONAPISchemas\FormFieldSchema;
 use jhoopes\LaravelVueForms\Http\JSONAPISchemas\GenericOptionSchema;
 use jhoopes\LaravelVueForms\Http\JSONAPISchemas\FormConfigurationSchema;
 
+
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
@@ -102,12 +103,11 @@ class Controller extends BaseController
     public static function getSchemas(): array
     {
         $encoderSchemas = [];
-        foreach (self::$schemas as $key => $schema) {
+        foreach(self::$schemas as $key => $schema) {
             $modelClass = get_class(LaravelVueForms::model($key));
             $encoderSchemas[$modelClass] = $schema;
         }
         $encoderSchemas[GenericOption::class] = GenericOptionSchema::class;
         return $encoderSchemas;
     }
-
 }
