@@ -2,32 +2,35 @@
 
 namespace jhoopes\LaravelVueForms\Providers;
 
-use Faker\Factory;
 use Illuminate\Support\ServiceProvider;
 use jhoopes\LaravelVueForms\Commands\SeedAdmin;
+use jhoopes\LaravelVueForms\Policies\FormFieldPolicy;
+use jhoopes\LaravelVueForms\Policies\FormConfigurationPolicy;
 use jhoopes\LaravelVueForms\Contracts\Repositories\LaravelVueForms;
 
 class LaravelVueFormsServiceProvider extends ServiceProvider
 {
-
-    public function boot()
+    public function boot(): void
     {
         $this->defineResources();
         $this->definePublishes();
         $this->defineCommands();
 
+        if (config('laravel-vue-forms.openAccess')) {
+            $this->registerOpenAccess();
+        }
+
         $this->loadFactoriesFrom(base_path('/vendor/jhoopes/laravel-vue-forms/database/factories'));
     }
 
 
-    protected function defineResources()
+    protected function defineResources(): void
     {
         $this->loadViewsFrom(base_path('vendor/jhoopes/laravel-vue-forms/resources/views'), 'forms');
         $this->loadMigrationsFrom(base_path('/vendor/jhoopes/laravel-vue-forms') . '/database/migrations');
-
     }
 
-    protected function definePublishes()
+    protected function definePublishes():void
     {
         $this->publishes([
             base_path('/vendor/jhoopes/laravel-vue-forms') . '/config/laravel-vue-forms.php'
@@ -35,21 +38,27 @@ class LaravelVueFormsServiceProvider extends ServiceProvider
         ]);
     }
 
-    protected function defineCommands()
+    protected function defineCommands():void
     {
-        if($this->app->runningInConsole()) {
+        if ($this->app->runningInConsole()) {
             $this->commands([
                 SeedAdmin::class,
             ]);
         }
     }
 
-
-    public function register()
+    protected function registerOpenAccess(): void
     {
+        \Gate::policy(get_class(\jhoopes\LaravelVueForms\Facades\LaravelVueForms::model('form_configuration')), FormConfigurationPolicy::class);
+        \Gate::policy(get_class(\jhoopes\LaravelVueForms\Facades\LaravelVueForms::model('form_field')), FormFieldPolicy::class);
+    }
 
+
+    public function register(): void
+    {
         $this->mergeConfigFrom(
-            base_path('/vendor/jhoopes/laravel-vue-forms/config/laravel-vue-forms.php'), 'laravel-vue-forms'
+            base_path('/vendor/jhoopes/laravel-vue-forms/config/laravel-vue-forms.php'),
+            'laravel-vue-forms'
         );
 
         $this->app->bind(LaravelVueForms::class, \jhoopes\LaravelVueForms\Repositories\LaravelVueForms::class);

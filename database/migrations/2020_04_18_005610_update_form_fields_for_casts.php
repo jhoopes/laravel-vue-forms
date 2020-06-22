@@ -14,7 +14,7 @@ class UpdateFormFieldsForCasts extends Migration
     public function up()
     {
         Schema::table('form_fields', function (Blueprint $table) {
-            $table->string('cast')->nullable()->after('parent_id');
+            $table->string('cast_to')->nullable()->after('parent_id');
         });
     }
 
@@ -27,7 +27,7 @@ class UpdateFormFieldsForCasts extends Migration
     {
         Schema::table('form_fields', function (Blueprint $table) {
             $table->dropColumn([
-                'cast'
+                'cast_to'
             ]);
         });
     }

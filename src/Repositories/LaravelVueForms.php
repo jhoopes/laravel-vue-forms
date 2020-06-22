@@ -254,7 +254,10 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
                 }
 
                 Arr::set($validData, $field->value_field, $dataValue);
-            }else if ($field->disabled === 0 && $dataValue !== null ) {
+            }else if ($field->widget === 'code' && Arr::get($field->field_extra, 'editorOptions.mode') === 'json') {
+                $dataValue = json_decode($dataValue);
+                Arr::set($validData, $field->value_field, $dataValue);
+            } else if (!$field->disabled && $dataValue !== null ) {
                 Arr::set($validData, $field->value_field, $dataValue);
             } else if ($defaultData && (!isset($data[$field->value_field]) || $dataValue === null)) { // default field if available
                 Arr::set($validData, $field->value_field, $this->getDefaultFieldValue($field));

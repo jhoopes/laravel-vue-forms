@@ -58,6 +58,10 @@ class SeedAdmin extends Command
 
         $this->line('Found ' . count($formSeeds['form_fields']) . ' form fields.');
         foreach($formSeeds['form_fields'] as $formFieldName => $formFieldInfo) {
+            if(!empty($formFieldInfo['parent_id'])) {
+                $formFieldInfo['parent_id'] = LaravelVueForms::model('form_field')->where('name', $formFieldInfo['parent_id'])
+                    ->firstOrFail()->id;
+            }
             $formFieldModel = LaravelVueForms::model('form_field')->updateOrCreate([
                 'name' => $formFieldInfo['name']
             ],$formFieldInfo);
@@ -73,7 +77,7 @@ class SeedAdmin extends Command
             collect($formConfigFields)->each(function($fieldName, $index) use($formConfig) {
                 $formField = $this->formFields->firstWhere('name', $fieldName);
                 if(!$formField) {
-                    throw new \Exception('Invalid Form Field to seed');
+                    throw new \Exception('Invalid Form Field to seed: ' . $fieldName);
                 }
 
                 if(!$field = $formConfig->fields->firstWhere('name', $formField->name)) {

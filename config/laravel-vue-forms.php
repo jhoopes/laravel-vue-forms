@@ -7,6 +7,7 @@ return [
     'check_permissions' => true,
     'values_soft_delete' => false,
 
+    'openAccess' => true,
 
 
     /**
@@ -14,6 +15,7 @@ return [
      */
     'use_web_routes' => true,
     'use_admin_api' => true,
+    'admin_middleware' => '',
 
 
 

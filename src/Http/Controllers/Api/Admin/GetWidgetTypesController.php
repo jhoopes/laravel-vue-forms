@@ -6,20 +6,16 @@ use Illuminate\Http\Request;
 use jhoopes\LaravelVueForms\Models\GenericOption;
 use jhoopes\LaravelVueForms\Http\Controllers\Controller;
 
-class GetEntityTypesController extends Controller
+class GetWidgetTypesController extends Controller
 {
-
-
     public function __invoke(Request $request)
     {
-        return $this->collectedResponse(collect(config('laravel-vue-forms.entity_types'))
-            ->keys()
-            ->map(function($option) {
+        return $this->collectedResponse(collect(config('laravel-vue-forms.widget_types'))
+            ->map(function($option, $value) {
                 return new GenericOption([
-                    'name' => $option,
-                    'title' => \Str::title(str_replace('_', ' ', $option))
+                    'value' => $value,
+                    'title' => $option['name']
                 ]);
             })->toArray());
     }
-
 }

@@ -16,10 +16,6 @@ class FormConfigurationsController extends Controller
                 'nullable',
                 'integer',
             ],
-            'name' => [
-                'nullable',
-                'string'
-            ]
         ]);
 
         $query = LaravelVueForms::model('form_configuration')
@@ -29,15 +25,15 @@ class FormConfigurationsController extends Controller
             $query->where('name', 'like', $request->get('name'));
         }
 
-        $pp = 20;
-        if($request->has('pp') && $request->get('pp') !== null) {
-            $pp = $request->get('pp');
+        if(!config('laravel-vue-forms.edit_system_forms')) {
+            $query->where('type', '!=', 'system');
         }
 
-        if($pp = 0) { // if the request was for all objectsd, return them all without pagination
-            return $query->all();
+        $pp = $request->get('pp', 20);
+        if($pp === 0) {
+            return $this->collectedResponse($query->all());
         }
 
-        return $this->collectedResponse($query->paginate($pp), [], ['fields']);
+        return $this->collectedResponse($query->paginate($pp));
     }
 }

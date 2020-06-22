@@ -23,7 +23,7 @@ class FormField extends Model
         'disabled',
         'is_eav',
         'parent_id',
-        'cast',
+        'cast_to',
         'field_extra'
     ];
 
