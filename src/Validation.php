@@ -73,6 +73,10 @@ class Validation
                         }
                     }
 
+                    if(is_string($validation_rule) && strstr($validation_rule, 'unique') && $this->entityModel !== null && $this->entityModel->exists) {
+                        $validation_rule .= ',' . $this->entityModel->id;
+                    }
+
                     $rule[] = $validation_rule;
                 });
             }
