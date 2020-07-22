@@ -50,7 +50,7 @@ class Controller extends BaseController
             ]);
     }
 
-    protected function collectedResponse($collectedResource, $meta = [], $includes = []): Response
+    protected function collectedResponse($collectedResource, $meta = [], $includes = [])
     {
         if(!LaravelVueForms::useJSONApi()) {
             return $collectedResource;
