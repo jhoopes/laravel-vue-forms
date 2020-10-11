@@ -18,9 +18,11 @@ class FormSubmit extends Controller
             'data'                => 'required|array'
         ]);
 
-        return (new Form($request->get('formConfigurationId'), $request, new Validation()))
+        $formConfiguration = (new Form($request->get('formConfigurationId'), $request, new Validation()))
             ->validate()
             ->save();
+
+        return $this->resourceResponse($formConfiguration);
     }
 
     public function update(Request $request)
@@ -31,9 +33,11 @@ class FormSubmit extends Controller
             'entityId'            => 'required|integer'
         ]);
 
-        return (new Form($request->get('formConfigurationId'), $request, new Validation()))
+        $formConfiguration = (new Form($request->get('formConfigurationId'), $request, new Validation()))
             ->validate()
             ->save();
+
+        return $this->resourceResponse($formConfiguration);
     }
 
 }

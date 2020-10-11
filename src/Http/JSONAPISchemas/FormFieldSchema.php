@@ -20,7 +20,14 @@ class FormFieldSchema extends BaseSchema
 
     public function getAttributes($resource, ContextInterface $context): iterable
     {
-        return $resource->toArray();
+        $attributes = $resource->toArray();
+        // add field order if this schema is being loaded as included with a form configuration
+        if($order = data_get($resource, 'pivot.order')) {
+            unset($attributes['pivot']);
+            $attributes['order'] = $order;
+        }
+
+        return $attributes;
     }
 
     public function getRelationships($resource, ContextInterface $context): iterable

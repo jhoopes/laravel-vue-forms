@@ -266,24 +266,6 @@ return [
                 ]
             ]
         ],
-        'ff_parent' => [
-            'name' => 'ff_parent',
-            'value_field' => 'parent_id',
-            'label' => 'Parent ID',
-            'widget' => 'text',
-            'visible' => true,
-            'disabled' => false,
-            'is_eav' => false,
-            'parent_id' => 'ff_col1',
-            'cast' => 'string',
-            'field_extra' => [
-                'required' => false,
-                'validation_rules' => [
-                    'string',
-                    'alpha_dash'
-                ]
-            ]
-        ],
         'ff_cast' => [
             'name' => 'ff_cast',
             'value_field' => 'cast_to',
@@ -321,7 +303,7 @@ return [
         ],
         'ff_field_extra' => [
             'name' => 'ff_field_extra',
-            'value_field' => 'options',
+            'value_field' => 'field_extra',
             'label' => 'Field Options',
             'widget' => 'field-extra',
             'visible' => true,
@@ -333,7 +315,8 @@ return [
                 'required' => false,
                 'validation_rules' => [
                     'nullable',
-                    'json'
+                    'array',
+                    '\\jhoopes\\LaravelVueForms\\ValidationRules\\FieldExtraValidation'
                 ],
                 'editorOptions' => [
                     'ace_options' => [],
@@ -362,7 +345,6 @@ return [
             'ff_visible',
             'ff_disabled',
             'ff_is_eav',
-            'ff_parent',
             'ff_cast',
             'ff_col2',
             'ff_field_extra'

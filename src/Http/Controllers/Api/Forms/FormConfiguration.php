@@ -4,6 +4,7 @@ namespace jhoopes\LaravelVueForms\Http\Controllers\Api\Forms;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use jhoopes\LaravelVueForms\Facades\LaravelVueForms;
 use jhoopes\LaravelVueForms\Http\Controllers\Controller;
 
 class FormConfiguration extends Controller
@@ -21,11 +22,21 @@ class FormConfiguration extends Controller
             'formConfigIds.*'   => 'integer',
             'formConfigNames'   => 'nullable|array',
             'formConfigNames.*' => 'string',
-            'formConfigName'    => 'nullable|string|exists:form_configurations,name'
+            'formConfigName'    => 'nullable|string|exists:form_configurations,name',
+            'include'           => 'nullable|array'
         ]);
 
         $query = \jhoopes\LaravelVueForms\Models\FormConfiguration::query();
-        $query->with('fields');
+
+        if(!config('laravel-vue-forms.edit_system_forms')) {
+            $query->where('type', '!=', 'system');
+        }
+
+        if(LaravelVueForms::useJSONApi()) {
+            $query->with($request->get('include', []));
+        } else {
+            $query->with('fields');
+        }
 
         $active = $request->get('active', 1);
         $query->where('active', $active);
@@ -56,6 +67,10 @@ class FormConfiguration extends Controller
 
     public function show(Request $request, $formConfigId)
     {
+        if($request->has('include') && is_string($request->get('include'))) {
+            $request->request->set('include', [$request->get('include')]);
+        }
+
         $request->validate([
             'include' => [
                 'sometimes',

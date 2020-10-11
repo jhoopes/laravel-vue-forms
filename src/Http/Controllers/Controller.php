@@ -33,6 +33,21 @@ class Controller extends BaseController
         }
     }
 
+    protected function infoResponse($meta)
+    {
+        if(!LaravelVueForms::useJSONApi()) {
+            return $meta;
+        }
+
+        $response = Encoder::instance(self::getSchemas())
+            ->encodeMeta($meta);
+
+        return response($response, 200)
+            ->withHeaders([
+                'Content-Type' => MediaType::JSON_API_MEDIA_TYPE
+            ]);
+    }
+
     protected function resourceResponse($resource, $meta = [], $includes = []): Response
     {
         if(!LaravelVueForms::useJSONApi()) {
