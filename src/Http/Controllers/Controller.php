@@ -48,7 +48,7 @@ class Controller extends BaseController
             ]);
     }
 
-    protected function resourceResponse($resource, $meta = [], $includes = []): Response
+    protected function resourceResponse($resource, $meta = [], $includes = [])
     {
         if(!LaravelVueForms::useJSONApi()) {
             return $resource;
@@ -86,7 +86,7 @@ class Controller extends BaseController
             ]);
     }
 
-    protected function paginatedResponse(AbstractPaginator $paginatedResource, $meta = [], $includes = []): Response
+    protected function paginatedResponse(AbstractPaginator $paginatedResource, $meta = [], $includes = [])
     {
         if(!LaravelVueForms::useJSONApi()) {
             return $paginatedResource;
