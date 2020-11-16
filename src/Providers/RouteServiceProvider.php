@@ -52,10 +52,13 @@ class RouteServiceProvider extends ServiceProvider
     {
 
         if(config('laravel-vue-forms.api_middleware')) {
-            \Route::prefix(LaravelVueForms::apiPrefix())
-                ->namespace($this->namespace . '\Api')
-                ->middleware(config('laravel-vue-forms.api_middleware'))
-                ->group(base_path('/vendor/jhoopes/laravel-vue-forms') . '/routes/api.php');
+            
+            if(config('laravel-vue-forms.use_base_api')) {
+                \Route::prefix(LaravelVueForms::apiPrefix())
+                    ->namespace($this->namespace . '\Api')
+                    ->middleware(config('laravel-vue-forms.api_middleware'))
+                    ->group(base_path('/vendor/jhoopes/laravel-vue-forms') . '/routes/api.php');
+            }
 
             if(config('laravel-vue-forms.use_admin_api')) {
                 \Route::prefix(LaravelVueForms::adminApiPrefix())
@@ -65,9 +68,12 @@ class RouteServiceProvider extends ServiceProvider
             }
 
         }else {
-            \Route::prefix(LaravelVueForms::apiPrefix())
-                ->namespace($this->namespace . '\Api')
-                ->group(base_path('/vendor/jhoopes/laravel-vue-forms') . '/routes/api.php');
+
+            if(config('laravel-vue-forms.use_base_api')) {
+                \Route::prefix(LaravelVueForms::apiPrefix())
+                    ->namespace($this->namespace . '\Api')
+                    ->group(base_path('/vendor/jhoopes/laravel-vue-forms') . '/routes/api.php');    
+            }
 
             if(config('laravel-vue-forms.use_admin_api')) {
                 \Route::prefix(LaravelVueForms::adminApiPrefix())

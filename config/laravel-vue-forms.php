@@ -23,6 +23,7 @@ return [
      * Admin Configuration
      */
     'use_web_routes' => env('LVF_USE_WEB_ROUTES', true),
+    'use_base_api' => env('LVF_USE_BASE_API', true),
     'use_admin_api' => env('LVF_USE_ADMIN_API', true),
     'admin_middleware' => '',
 
