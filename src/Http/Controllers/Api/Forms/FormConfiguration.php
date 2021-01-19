@@ -82,7 +82,7 @@ class FormConfiguration extends Controller
             ]
         ]);
 
-        $formConfig = \jhoopes\LaravelVueForms\Models\FormConfiguration::with($request->get('include'))->findOrFail($formConfigId);
+        $formConfig = \jhoopes\LaravelVueForms\Models\FormConfiguration::with($request->get('include', []))->findOrFail($formConfigId);
         return $this->resourceResponse($formConfig, [], $request->get('include'));
     }
 }
