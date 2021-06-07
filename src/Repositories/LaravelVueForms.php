@@ -202,7 +202,7 @@ class LaravelVueForms implements \jhoopes\LaravelVueForms\Contracts\Repositories
                 }else {
 
                     $newFields = $fields->filter(function($field) use($firstRelationship) {
-                        return starts_with($field, $firstRelationship);
+                        return Str::startsWith($field, $firstRelationship);
                     })->map(function($field) use($firstRelationship) {
                         return str_replace($firstRelationship . '.', '', $field);
                     });

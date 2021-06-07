@@ -69,7 +69,7 @@ class Validation
                         $validation_rule = new $validation_rule($this->entityModel, array_merge($this->params, $ruleParams));
                     } elseif (preg_match_all('{(params\..*?)}', $validation_rule, $matches)) {
                         foreach ($matches as $match) {
-                            $rule = str_replace('{' . $match . '}', array_get($this->params, $match));
+                            $rule = str_replace('{' . $match . '}', Arr::get($this->params, $match));
                         }
                     }
 
