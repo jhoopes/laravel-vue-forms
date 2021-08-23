@@ -1,6 +1,6 @@
 <?php
 
-use jhoopes\LaravelVueForms\Facades\LaravelVueForms;
+use \jhoopes\LaravelVueForms\Support\Facades\LaravelVueForms;
 
 return [
 
@@ -19,6 +19,13 @@ return [
             'active' => 1,
             'entity_name' => 'form_field',
             'entity_model' => \jhoopes\LaravelVueForms\Models\FormField::class,
+        ],
+        'entity_type_form' => [
+            'name' => 'entity_type_form',
+            'type' => 'entity_type_form',
+            'active' => 1,
+            'entity_name' => 'entity_type',
+            'entity_model' => \jhoopes\LaravelVueForms\Models\EntityType::class,
         ]
     ],
 
@@ -78,9 +85,9 @@ return [
                 ]
             ]
         ],
-        'fc_entity_name' => [
-            'name' => 'fc_entity_name',
-            'value_field' => 'entity_name',
+        'fc_entity_type' => [
+            'name' => 'fc_entity_type',
+            'value_field' => 'entity_type_id',
             'label' => 'Entity Type',
             'widget' => 'dropdown',
             'visible' => true,
@@ -92,13 +99,50 @@ return [
                 'required' => false,
                 'validation_rules' => [
                     'nullable',
-                    'string'
+                    'int',
+                    'exists:entity_types,id'
                 ],
                 'options_config' => [
                     'optionsURL' => LaravelVueForms::adminApiPrefix() . '/entity_types',
                     'optionLabelField' => 'title',
-                    'optionValueField' => 'name',
+                    'optionValueField' => 'id',
                 ]
+            ]
+        ],
+        'fc_entity_name' => [
+            'name' => 'fc_entity_name',
+            'value_field' => 'entity_name',
+            'label' => 'Entity Name',
+            'widget' => 'text',
+            'visible' => true,
+            'disabled' => false,
+            'is_eav' => false,
+            'parent_id' => null,
+            'cast' => 'string',
+            'field_extra' => [
+                'required' => false,
+                'validation_rules' => [
+                    'nullable',
+                    'string'
+                ],
+            ]
+        ],
+        'fc_entity_model' => [
+            'name' => 'fc_entity_model',
+            'value_field' => 'entity_model',
+            'label' => 'Entity Model',
+            'widget' => 'text',
+            'visible' => true,
+            'disabled' => false,
+            'is_eav' => false,
+            'parent_id' => null,
+            'cast' => 'string',
+            'field_extra' => [
+                'required' => false,
+                'validation_rules' => [
+                    'nullable',
+                    'string'
+                ],
             ]
         ],
         'fc_options' => [
@@ -305,7 +349,7 @@ return [
             'name' => 'ff_field_extra',
             'value_field' => 'field_extra',
             'label' => 'Field Options',
-            'widget' => 'field-extra',
+            'widget' => 'form-field-extra',
             'visible' => true,
             'disabled' => false,
             'is_eav' => false,
@@ -316,7 +360,7 @@ return [
                 'validation_rules' => [
                     'nullable',
                     'array',
-                    '\\jhoopes\\LaravelVueForms\\ValidationRules\\FieldExtraValidation'
+                    '\\jhoopes\\LaravelVueForms\\App\\ValidationRules\\FieldExtraValidation'
                 ],
                 'editorOptions' => [
                     'ace_options' => [],
@@ -324,7 +368,136 @@ return [
                     'height' => '400px'
                 ]
             ]
-        ]
+        ],
+        'et_name' => [
+            'name' => 'et_name',
+            'value_field' => 'name',
+            'label' => 'Entity Type Name',
+            'widget' => 'text',
+            'visible' => true,
+            'disabled' => false,
+            'is_eav' => false,
+            'parent_id' => null,
+            'cast' => 'string',
+            'field_extra' => [
+                'required' => true,
+                'validation_rules' => [
+                    'string',
+                    'alpha_dash'
+                ]
+            ]
+        ],
+        'et_title' => [
+            'name' => 'et_title',
+            'value_field' => 'title',
+            'label' => 'Entity Type Title',
+            'widget' => 'text',
+            'visible' => true,
+            'disabled' => false,
+            'is_eav' => false,
+            'parent_id' => null,
+            'cast' => 'string',
+            'field_extra' => [
+                'required' => true,
+                'validation_rules' => [
+                    'string',
+                ]
+            ]
+        ],
+        'et_type' => [
+            'name' => 'et_type',
+            'value_field' => 'type',
+            'label' => 'Entity Type',
+            'widget' => 'dropdown',
+            'visible' => true,
+            'disabled' => false,
+            'is_eav' => false,
+            'parent_id' => null,
+            'cast' => 'string',
+            'field_extra' => [
+                'required' => true,
+                'validation_rules' => [
+                    'nullable',
+                    'string'
+                ],
+                'options_config' => [
+                    'optionsURL' => LaravelVueForms::adminApiPrefix() . '/entity_type_options',
+                    'optionLabelField' => 'title',
+                    'optionValueField' => 'name',
+                ]
+            ]
+        ],
+        'et_built_in_type' => [
+            'name' => 'et_built_in_type',
+            'value_field' => 'built_in_type',
+            'label' => 'BuiltEntity Type',
+            'widget' => 'dropdown',
+            'visible' => true,
+            'disabled' => false,
+            'is_eav' => false,
+            'parent_id' => null,
+            'cast' => 'string',
+            'field_extra' => [
+                'validation_rules' => [
+                    'requiredIf:type,model',
+                    'string'
+                ],
+                'condition' => [
+                    'valueField' => 'type',
+                    'fieldValue' => 'model'
+                ],
+                'options_config' => [
+                    'optionsURL' => LaravelVueForms::adminApiPrefix() . '/built_in_entity_types',
+                    'optionLabelField' => 'title',
+                    'optionValueField' => 'name',
+                ]
+            ]
+        ],
+        'et_configuration' => [
+            'name' => 'et_configuration',
+            'value_field' => 'entity_configuration',
+            'label' => 'Configuration Options',
+            'widget' => 'code',
+            'visible' => true,
+            'disabled' => false,
+            'is_eav' => false,
+            'parent_id' => null,
+            'cast' => 'array',
+            'field_extra' => [
+                'required' => false,
+                'validation_rules' => [
+                    'nullable',
+                    'json'
+                ],
+                'editorOptions' => [
+                    'ace_options' => [],
+                    'mode' => 'json',
+                    'height' => '200px'
+                ]
+            ]
+        ],
+        'et_form_configuration_id' => [
+            'name' => 'et_form_configuration_id',
+            'value_field' => 'default_form_configuration_id',
+            'label' => 'Entity Default Form Configuration',
+            'widget' => 'autocomplete',
+            'visible' => true,
+            'disabled' => false,
+            'is_eav' => false,
+            'parent_id' => null,
+            'cast' => 'string',
+            'field_extra' => [
+                'validation_rules' => [
+                    'nullable',
+                    'numeric'
+                ],
+                'options_config' => [
+                    'optionsURL' => LaravelVueForms::adminApiPrefix() . '/form_configurations',
+                    'optionLabelField' => 'name',
+                    'optionValueField' => 'id',
+                ]
+            ]
+        ],
     ],
 
 
@@ -333,7 +506,9 @@ return [
             'fc_name',
             'fc_type',
             'fc_active',
+            'fc_entity_type',
             'fc_entity_name',
+            'fc_entity_model',
             'fc_options'
         ],
         'form_field_form' => [
@@ -348,6 +523,14 @@ return [
             'ff_cast',
             'ff_col2',
             'ff_field_extra'
+        ],
+        'entity_type_form' => [
+            'et_name',
+            'et_title',
+            'et_type',
+            'et_built_in_type',
+            'et_form_configuration_id',
+            'et_configuration',
         ]
     ]
 

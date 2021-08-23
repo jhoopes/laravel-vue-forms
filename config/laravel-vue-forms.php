@@ -3,8 +3,9 @@
 
 return [
 
-    'api_middleware' => '',
+    'api_middleware' => ['api'],
     'check_permissions' => env('LVF_CHECK_PERMISSIONS', false),
+    'entities_soft_delete' => env('LVF_ENTITIES_SOFT_DELETE', false),
     'values_soft_delete' => env('LVF_VALUES_SOFT_DELETE', false),
 
     /**
@@ -16,7 +17,7 @@ return [
     /**
      * Allow editing of system level forms
      */
-    'edit_system_forms' => true,
+    'edit_system_forms' => env('LVF_EDIT_SYSTEM_FORMS', false),
 
 
     /**
@@ -28,10 +29,15 @@ return [
     'admin_middleware' => '',
 
 
+    'entity_type_options' => [
+        'model' => 'Built In Entity',
+        'custom' => 'Custom Entity'
+    ],
 
-    'entity_types' => [
+    'built_in_entity_types' => [
+        'entity_type'        => \jhoopes\LaravelVueForms\Models\EntityType::class,
         'form_configuration' => \jhoopes\LaravelVueForms\Models\FormConfiguration::class,
-        'form_field' => \jhoopes\LaravelVueForms\Models\FormField::class,
+        'form_field'         => \jhoopes\LaravelVueForms\Models\FormField::class,
     ],
 
     /**
@@ -60,6 +66,9 @@ return [
         ],
         'dropdown' => [
             'name' => 'Select / Dropdown',
+        ],
+        'multidropdown' => [
+            'name' => 'Multi-Select / Dropdown'
         ],
         'checkbox' => [
             'name' => 'Checkbox',

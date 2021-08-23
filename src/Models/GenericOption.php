@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace jhoopes\LaravelVueForms\Models;
 
@@ -23,9 +23,6 @@ class GenericOption
         $this->attributes = $attributes;
     }
 
-
-
-
     /**
      * Dynamically retrieve attributes on the model.
      *
@@ -36,7 +33,6 @@ class GenericOption
     {
         return data_get($this->attributes, $key);
     }
-
 
     /**
      * Dynamically set attributes on the model.
@@ -114,7 +110,7 @@ class GenericOption
      */
     public function __unset($key)
     {
-        unset($this->attributes[$offset]);
+        unset($this->attributes[$key]);
     }
 
 }
