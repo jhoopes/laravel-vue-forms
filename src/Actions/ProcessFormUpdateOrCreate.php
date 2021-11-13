@@ -5,6 +5,7 @@ namespace jhoopes\LaravelVueForms\Actions;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Events\Dispatcher;
+use jhoopes\LaravelVueForms\DTOs\CastFormFieldValuesDTO;
 use jhoopes\LaravelVueForms\DTOs\CheckPermissionDTO;
 use jhoopes\LaravelVueForms\DTOs\EntityModelForFormConfigurationDTO;
 use jhoopes\LaravelVueForms\DTOs\FormProcessedDTO;
@@ -24,6 +25,7 @@ class ProcessFormUpdateOrCreate
         public GetEntityModelForFormConfig $entityModelForFormConfig,
         public CheckPermissionForEntityModel $checkPermissions,
         public ValidateDataForForm $validateDataForForm,
+        public CastFormFieldValues $castFormFieldValues,
         public Dispatcher $eventDispatcher
     ) {}
 
@@ -36,7 +38,6 @@ class ProcessFormUpdateOrCreate
             $formConfiguration = LaravelVueForms::model('form_configuration')
                 ->findOrFail($formUpdateOrCreateDTO->formConfigurationId);
         }
-
 
         if($formUpdateOrCreateDTO->entityId !== null) {
             $action = 'update';
@@ -62,15 +63,21 @@ class ProcessFormUpdateOrCreate
             if(!$hasPermission) {
                 throw new AuthorizationException('Invalid access to save entity.');
             }
-
         }
 
-        $validData = $formUpdateOrCreateDTO->data;
+        $castedData = $this->castFormFieldValues->execute(
+            CastFormFieldValuesDTO::fromProcessFormAction(
+                $formUpdateOrCreateDTO->data,
+                $formConfiguration->fields
+            )
+        );
+
+        $validData = $castedData;
         if($formUpdateOrCreateDTO->validateData) {
             $validData = $this->validateDataForForm->execute(
                 ValidateDataForFormDTO::fromForm(
                     formConfiguration: $formConfiguration,
-                    unValidatedData: $formUpdateOrCreateDTO->data,
+                    unValidatedData: $castedData,
                     entityModel: $entityModel,
                     params: $formUpdateOrCreateDTO->validationParams,
                     defaultData: $formUpdateOrCreateDTO->defaultData
@@ -79,7 +86,7 @@ class ProcessFormUpdateOrCreate
         }
 
 
-        $processedDTO = new FormProcessedDTO($formConfiguration, $validData);
+        $processedDTO = new FormProcessedDTO($formConfiguration, $validData, $entityModel);
 
         if(!$formUpdateOrCreateDTO->persistData) {
             return $processedDTO;

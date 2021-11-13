@@ -48,22 +48,35 @@ trait FormAction
     /**
      * Get the value fields of NonEAV Fields for un-flattening them to set up saving structure
      *
-     * @param $formConfig
+     * @param FormConfiguration $formConfig
      * @return Collection
      */
-    public function getNonEAVValueFields($formConfig) : Collection
+    public function getNonEAVValueFields(FormConfiguration $formConfig) : Collection
     {
-        return $formConfig->fields->where('is_eav', 0)
+        return $formConfig->fields
+            ->where('is_eav', 0)
+            ->whereNotIn('widget', ['files'])
             ->pluck('value_field');
+    }
+
+    /**
+     * Get NonRelated form fields that have a widget type of files
+     *
+     * @param FormConfiguration $formConfig
+     * @return Collection
+     */
+    public function getNonRelatedFilesFields(FormConfiguration $formConfig): Collection
+    {
+        return $formConfig->fields->where('widget', 'files');
     }
 
     /**
      * Get fields that are EAV fields, but not related to any specific sub-model
      *
-     * @param $formConfig
+     * @param FormConfiguration $formConfig
      * @return Collection
      */
-    public function getNonRelatedEAVFields($formConfig) : Collection
+    public function getNonRelatedEAVFields(FormConfiguration $formConfig) : Collection
     {
         return $formConfig->fields->filter(function($field) {
             return !Str::contains($field->value_field, '.');
@@ -74,10 +87,10 @@ trait FormAction
      * Get the EAV fields for a related model/sub-model by the relationship name
      *
      * @param $relationship
-     * @param $formConfig
+     * @param FormConfiguration $formConfig
      * @return Collection
      */
-    public function getRelatedEAVFields($relationship, $formConfig) : Collection
+    public function getRelatedEAVFields($relationship, FormConfiguration $formConfig) : Collection
     {
         return $formConfig->fields->filter(function($field) use($relationship) {
             return Str::contains($field->value_field, $relationship . '.');
@@ -91,7 +104,7 @@ trait FormAction
      * @param Collection $fields
      * @param array $data
      */
-    public function setImplicitFieldsOnModel($model, $fields, $data)
+    public function setImplicitFieldsOnModel(Model $model, Collection $fields, array $data)
     {
         $attributes = [];
 
@@ -109,16 +122,12 @@ trait FormAction
      * @param Collection|null $fields Default is to use non related EAV fields
      * @throws \InvalidArgumentException
      */
-    public function saveEAVFields($model, $data, $fields)
+    public function saveEAVFields(Model $model, array $data, Collection|null$fields)
     {
         $traits = LaravelVueForms::class_uses_deep($model);
         if(!in_array(HasCustomAttributes::class, $traits)) {
             throw new \InvalidArgumentException('Invalid Model for EAV');
         }
-
-//        if($fields === null) {
-//            $fields = $this->getNonRelatedEAVFields();
-//        }
 
         foreach($fields as $field) {
             if($field->widget === 'files') {
@@ -152,8 +161,6 @@ trait FormAction
      */
     public function setRelatedFieldsOnModel($model, $fields, $data, $formConfig)
     {
-
-
         foreach($fields as $relationship => $field) {
 
             if(is_array($field)) {
