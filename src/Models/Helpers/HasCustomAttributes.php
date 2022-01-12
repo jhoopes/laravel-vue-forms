@@ -60,12 +60,15 @@ trait HasCustomAttributes
     {
         if (parent::hasChanges($changes, $attributes)) {
             return true;
+        }else if(empty($attributes)) {
+            // if no attributes and parent model has no changes return count of eavChanges
+            return count($this->eavChanges['new']) > 0;
         }
 
-        /**
-         * check if all or a specific EAV attribute has changed
-         */
-        return count($this->eavChanges['new']) > 0;
+        // finally check for changes in the attributes passed
+        return collect(Arr::wrap($attributes))->filter(function($attribute) {
+            return Arr::exists($this->eavChanges['new'], $attribute);
+        })->count() > 0;
     }
 
 
